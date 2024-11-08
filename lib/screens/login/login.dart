@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:golf_accelerator_app/screens/login/local_widgets/sign_in_button.dart';
-import 'package:golf_accelerator_app/screens/login/local_widgets/text_field.dart';
-import 'package:golf_accelerator_app/screens/onboarding/onboarding.dart';
+import 'package:golf_accelerator_app/screens/onboarding/golfer_skill.dart';
+import 'package:golf_accelerator_app/screens/onboarding/welcome.dart';
 import 'package:golf_accelerator_app/theme/app_colors.dart';
+
+import 'local_widgets/sign_in_button.dart';
+import 'local_widgets/text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -35,9 +37,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 AnimatedCrossFade(
                   firstChild: Container(), // Empty container for login mode
-                  secondChild: const Column(
+                  secondChild: Column(
                     children: [
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       CustomTextField(hintText: "Confirm Password", obscureText: true),
                     ],
                   ),
@@ -62,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         // login logic
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => const OnBoardingScreen()),
+                          MaterialPageRoute(builder: (context) => const WelcomeScreen()),
                               (Route<dynamic> route) => false, // This condition removes all previous routes.
                         );
                       }
