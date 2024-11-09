@@ -4,12 +4,13 @@ class Bluetooth {
   List<ScanResult> scanResults = [];
   BluetoothDevice? myConnectedDevice;
   late List<BluetoothService> services;
-  String customServiceUUID = "3bf00c21-d291-4688-b8e9-5a379e3d9874";
-  String customCharacteristicUUID = "93c836a2-695a-42cc-95ac-1afa0eef6b0a";
+  String customServiceUUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+  String customCharacteristicUUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+  String writeCharacteristicUUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
   late BluetoothService customService;
-  late BluetoothService batteryService;
   late BluetoothCharacteristic customCharacteristic;
-  late BluetoothCharacteristic batteryCharacteristic;
+  late BluetoothCharacteristic writeCustomCharacteristic;
+
 
 
 
@@ -132,6 +133,46 @@ class Bluetooth {
     // it will default to **notifications**. This matches how CoreBluetooth works on iOS.
     await customCharacteristic.setNotifyValue(true); // This needs to go before writing to the characteristic
 
+  }
+
+  List<int> stringToHexList(String input) {
+    List<int> hexList = [];
+
+    for (int i = 0; i < input.length; i++) {
+      final char = input[i];
+      final hexValue = char.codeUnitAt(0);
+      hexList.add(hexValue);
+    }
+
+    return hexList;
+  }
+
+  int combinedHex(int highByte, lowByte){
+    return (highByte << 8) | lowByte;
+  }
+
+  Future<void> writeToDevice(List<int> hexValues) async {
+    await writeCustomCharacteristic.write(hexValues);
+  }
+
+  int toSignedInt8(int byte) {
+    return byte < 128 ? byte : byte - 256;
+  }
+
+  double getDecimalCombined(int highByte, int lowByte){
+    int combined = (highByte << 8) | lowByte;
+    combined = combined.toSigned(16);
+    double decimal = combined / 100;
+    return decimal;
+  }
+  int combineValues(int highByte, int lowByte){
+    print("high byte: $highByte Low Byte: $lowByte");
+    int combined = (highByte << 8) | lowByte;
+    combined = combined.toSigned(16);
+    combined = (combined * .049).round();
+    print("Combined $combined");
+
+    return combined;
   }
 }
 
@@ -544,4 +585,112 @@ class Bluetooth {
 //
 //
 // }
+
+
+
+
+
+
+
+// Future<void> discoverServices(BluetoothDevice connectedDevice) async {
+//   services = await connectedDevice.discoverServices();
+//
+//   // Reads all services and finds the custom service uuid
+//   for (BluetoothService service in services) {
+//     //print("Services: ${service.uuid.toString()}");
+//     if(service.uuid.toString() == customServiceUUID){
+//       print("Custom service found");
+//       customService = service;
+//     }
+//   }
+//   // Reads all characteristics
+//   var customServiceCharacteristics = customService.characteristics;
+//   // var batteryServiceCharacteristics = batteryService.characteristics;
+//   for(BluetoothCharacteristic characteristic in customServiceCharacteristics) {
+//     //print("Characteristics $characteristic");
+//     if(characteristic.uuid.toString() == customCharacteristicUUID){
+//       print("Custom characteristic found");
+//       print(characteristic);
+//       customCharacteristic = characteristic;
+//     } if(characteristic.uuid.toString() == writeCharacteristicUUID){
+//       print("Write Custom service found");
+//       writeCustomCharacteristic = characteristic;
+//     }
+//   }
+//   final subscription = customCharacteristic.onValueReceived.listen((value) async {
+//     print("VALUE RECEIVED!!!!");
+//
+//     // Check if the value has enough elements
+//     if (value.length > 11) {
+//       print("Length: ${value.length}");
+//       // Modify according to the expected indices
+//       // int xValue = toSignedInt8(value[8]);
+//       // int yValue = toSignedInt8(value[9]);
+//       // int zValue = toSignedInt8(value[10]);
+//       int xValue = combineValues(value[0], value[1]);
+//       int yValue = combineValues(value[2], value[3]);
+//       int zValue = combineValues(value[4], value[5]);
+//
+//       await writeToExcel(xValue.toDouble(), yValue.toDouble(), zValue.toDouble());
+//
+//       print("x value: $xValue");
+//       print("y value: $yValue");
+//       print("z value: $zValue");
+//       print("raw x high value: ${value[6]}");
+//       print("raw x low value: ${value[7]}");
+//       print("raw y high value: ${value[8]}");
+//       print("raw y low value: ${value[9]}");
+//       print("raw z high value: ${value[10]}");
+//       print("raw z low value: ${value[11]}");
+//       //print("reg 0x31: ${value[20]}");
+//       //print("reg 0x00: ${value[21]}");
+//       data.add(DataRow(cells: [
+//         DataCell(Text(xValue.toString())),
+//         DataCell(Text(yValue.toString())),
+//         DataCell(Text(zValue.toString())),
+//       ]));
+//     } else if(value.length < 4) {
+//       if(value[0] == 0x1){
+//         //stopMeasuring.value = false;
+//         startMeasuring.value = true;
+//         double z1 = getDecimalCombined(value[1], value[2]);
+//         await writeToExcel(0, 0, z1);
+//
+//         data.add(DataRow(cells: [
+//           DataCell(Text(0.toString())),
+//           DataCell(Text(0.toString())),
+//           DataCell(Text(z1.toString())),
+//         ]));
+//         //print("Value: $value");
+//         print("[1] $z1");
+//       } else if(value[0] == 0x2){
+//         startMeasuring.value = false;
+//         double zGForce = getDecimalCombined(value[1], value[2]);
+//         double radiusInMeters = 1.8288;
+//         double angularVelocity = sqrt(9.81 * zGForce / radiusInMeters);
+//         double linearVelocity = angularVelocity * radiusInMeters;
+//         //double meters = 6 * 0.3048;
+//         double mph = linearVelocity * 2.23694;
+//         print("Max Speed w/ Radius of 6ft: ${mph}");
+//         print("g-force: $zGForce");
+//         maxG.value = zGForce;
+//         speed.value = mph.roundToDouble();
+//         //await writeToExcel(0, 0, 0, zMaxValue);
+//         //stopMeasuring.value = true;
+//       }
+//
+//     } else if(value.length == 1 && value[0] == 3){
+//       print("SHOCK DETECTED");
+//     }
+//     else{
+//       print("Value: $value");
+//     }
+//   });
+//
+//   // cleanup: cancel subscription when disconnected
+//   //connectedDevice.cancelWhenDisconnected(subscription, delayed: true, next: true);
+//   connectedDevice.cancelWhenDisconnected(subscription);
+//   await customCharacteristic.setNotifyValue(true);
+// }
+
 
