@@ -110,6 +110,8 @@ class GolfDevice extends _$GolfDevice {
     }
 
     SwingData swing = SwingData(speed: tempSpeed, swingPoints: tempSwingDataPoints, timeStamp: tempTimeStamp);
+    print("swing points: ${swing.swingPoints}");
+    print("speed: ${swing.speed}");
     ref.read(swingsNotifierProvider.notifier).addSwing(swing);
     last10Swings.add(swing);
     print("End of Data: $data");
