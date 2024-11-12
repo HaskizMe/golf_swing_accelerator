@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:golf_accelerator_app/screens/onboarding/calibrate_club.dart';
 
 class CustomPrimaryHandButton extends StatelessWidget {
   final Widget image;
   final String title;
-  const CustomPrimaryHandButton({super.key, required this.image, required this.title});
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const CustomPrimaryHandButton({
+    super.key,
+    required this.image,
+    required this.title,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const CalibrateClub()));
-      },
+      onPressed: onTap,
       style: OutlinedButton.styleFrom(
-        side: const BorderSide(color: Colors.white, width: 2), // Set the border color to white
-        overlayColor: Colors.white.withOpacity(0.1),
+        backgroundColor: isSelected ? Colors.white : Colors.transparent,
+        side: BorderSide(color: Colors.white, width: 2), // Border color
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -25,9 +31,21 @@ class CustomPrimaryHandButton extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              image,
-              const SizedBox(height: 5,),
-              Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
+              isSelected
+                  ? ColorFiltered(
+                colorFilter: const ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+                child: image,
+              )
+                  : image,
+              const SizedBox(height: 5),
+              Text(
+                title,
+                style: TextStyle(
+                  color: isSelected ? Colors.blue : Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
             ],
           ),
         ),

@@ -1,6 +1,13 @@
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'dart:io';
 
-class Bluetooth {
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:golf_accelerator_app/models/device.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'bluetooth.g.dart';
+
+
+@Riverpod(keepAlive: true)
+class Bluetooth extends _$Bluetooth{
   List<ScanResult> scanResults = [];
   BluetoothDevice? myConnectedDevice;
   late List<BluetoothService> services;
@@ -10,43 +17,27 @@ class Bluetooth {
   late BluetoothService customService;
   late BluetoothCharacteristic customCharacteristic;
   late BluetoothCharacteristic writeCustomCharacteristic;
+  int packets = 0;
 
-
-
-
-  Future<void> scanForDevices() async {
-    print("Scanning for devices");
-    var scanSubscription = FlutterBluePlus.onScanResults.listen((results) {
-      scanResults = results.toList(); // Store scan results in the list
-    },
-      onError: (e) => print(e),
-    );
-
-    FlutterBluePlus.cancelWhenScanComplete(scanSubscription);
-
-    await FlutterBluePlus.startScan(
-        withNames:["PainDrain"],
-        timeout: const Duration(seconds: 5)
-    );
-
-    // wait for scanning to stop
-    await FlutterBluePlus.isScanning.where((val) => val == false).first;
-
-    if(scanResults.isNotEmpty){
-      print("not empty");
-    }
-    else{
-      print("empty");
-    }
+  @override
+  Bluetooth build() {
+    _initialize();
+    return this;
   }
+
+  // Methods
+  void _initialize() async {
+
+  }
+
 
   Future<bool> connectDevice(BluetoothDevice device) async {
     print("Here");
     bool success = false;
     try {
-      myConnectedDevice = device;
       await device.connect();
       print("after connection");
+      myConnectedDevice = device;
       var connectionSubscription = device.connectionState.listen((BluetoothConnectionState state) async {
         if (state == BluetoothConnectionState.disconnected) {
           //Get.to(() => const ConnectDevice(wasDisconnected: true,));
@@ -106,15 +97,24 @@ class Bluetooth {
         customCharacteristic = characteristic;
       }
     }
-    var batteryServiceCharacteristics = batteryService.characteristics;
 
+  }
+
+  String bytes2Str(List<int> arr) {
+    var str = '';
+    for (var byte in arr) {
+      var tmp = byte.toRadixString(16); // Convert byte to hex
+      if (tmp.length == 1) {
+        tmp = '0$tmp'; // Pad with '0' if necessary
+      }
+      str += tmp;
+    }
+    return str;
   }
 
 
   setupListeners(BluetoothDevice device) async {
     // This sends a command to the device to enable notifications. So that the below code can read value changes
-    // await customConfigurationDescriptor.write([1]);
-    // print("subscribing to custom characteristic");
 
 
     final customCharacteristicSubscription = customCharacteristic.onValueReceived.listen((value) {
@@ -122,6 +122,19 @@ class Bluetooth {
       /// this is only called when readFromDevice() is called anywhere in the program.
       /// I need to add a notifier function to the Firmware
       print("Characteristic received: $value");
+      String data = bytes2Str(value);
+      print(data);
+      //GolfDevice myDevice = GolfDevice();
+      final device = ref.read(golfDeviceProvider.notifier);
+      device.handleSpeed(data);
+      device.handleSwingDataPoints(data);
+      device.handleEndOfSwingData(data);
+      // if(value[1] == 115){
+      //   print("Total packets $packets");
+      //   packets = 0;
+      // }
+      // packets++;
+      // print(packets);
     });
 
     // cleanup: cancel subscription when disconnected
