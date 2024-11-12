@@ -190,6 +190,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.6"
+  cupertino_height_picker:
+    dependency: "direct main"
+    description:
+      name: cupertino_height_picker
+      sha256: "18dcb17479b7376458fd55d4a90bf529009b16139d427d97bec1c0c86fd27611"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   cupertino_icons:
     dependency: "direct main"
     description:

@@ -42,6 +42,7 @@ dependencies:
   riverpod_annotation: ^2.6.1
   flutter_svg: ^2.0.13
   flutter_blue_plus: ^1.34.3
+  cupertino_height_picker: ^1.0.1
 
 dev_dependencies:
   flutter_test:
