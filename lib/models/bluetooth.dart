@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -17,6 +18,7 @@ class Bluetooth extends _$Bluetooth{
   late BluetoothService customService;
   late BluetoothCharacteristic customCharacteristic;
   late BluetoothCharacteristic writeCustomCharacteristic;
+  late StreamSubscription<List<int>> customCharacteristicSubscription;
   int packets = 0;
 
   @override
@@ -43,6 +45,7 @@ class Bluetooth extends _$Bluetooth{
           //Get.to(() => const ConnectDevice(wasDisconnected: true,));
           print("Device Disconnected");
           print("Error disconnection description: ${device.disconnectReason}");
+          myConnectedDevice = null;
         } else if (state == BluetoothConnectionState.connected) {
           success = true;
         }
@@ -51,7 +54,7 @@ class Bluetooth extends _$Bluetooth{
       device.cancelWhenDisconnected(connectionSubscription, delayed: true, next: true);
       await discoverServices(device);
       success = true;
-      setupListeners(device);
+      // setupListeners(device);
     } catch (e) {
       success = false;
       print("Error Cannot Connect $e");
@@ -114,25 +117,19 @@ class Bluetooth extends _$Bluetooth{
 
 
   setupListeners(BluetoothDevice device) async {
+
     // This sends a command to the device to enable notifications. So that the below code can read value changes
-
-
-    final customCharacteristicSubscription = customCharacteristic.onValueReceived.listen((value) {
+    customCharacteristicSubscription = customCharacteristic.onValueReceived.listen((value) {
       /// This is where I will add the code to get the battery percentage. Right now
       /// this is only called when readFromDevice() is called anywhere in the program.
       /// I need to add a notifier function to the Firmware
-      print("Characteristic received: $value");
+      //print("Characteristic received: $value");
       String data = bytes2Str(value);
-      print(data);
-      //GolfDevice myDevice = GolfDevice();
+      //print(data);
       final device = ref.read(golfDeviceProvider.notifier);
-      device.handleSpeed(data);
-      device.handleSwingDataPoints(data);
-      device.handleEndOfSwingData(data);
-      // if(value[1] == 115){
-      //   print("Total packets $packets");
-      //   packets = 0;
-      // }
+      device.handleSwingData(data);
+      //device.handleSwingDataPoints(data);
+      //device.handleEndOfSwingData(data);
       // packets++;
       // print(packets);
     });
@@ -146,6 +143,14 @@ class Bluetooth extends _$Bluetooth{
     // it will default to **notifications**. This matches how CoreBluetooth works on iOS.
     await customCharacteristic.setNotifyValue(true); // This needs to go before writing to the characteristic
 
+  }
+
+  void cancelNotificationsSubscription() {
+    try{
+      customCharacteristicSubscription.cancel();
+    } catch(e){
+      print("Can't cancel notifications subscriptions $e");
+    }
   }
 
   List<int> stringToHexList(String input) {

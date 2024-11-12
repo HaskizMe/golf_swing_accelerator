@@ -1,9 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:golf_accelerator_app/models/bluetooth.dart';
+import 'package:golf_accelerator_app/screens/home/home.dart';
 import 'package:golf_accelerator_app/screens/swing_result/swing_result.dart';
 import '../../theme/app_colors.dart';
 
-class SwingScreen extends StatelessWidget {
+class SwingScreen extends ConsumerStatefulWidget {
   const SwingScreen({super.key});
+
+  @override
+  ConsumerState<SwingScreen> createState() => _SwingScreenState();
+}
+
+class _SwingScreenState extends ConsumerState<SwingScreen> {
+  @override
+  initState() {
+    super.initState();
+    _initialize();
+  }
+  @override
+  dispose() {
+    super.dispose();
+    //_dispose();
+  }
+
+  void _initialize() {
+    print("Init");
+    BluetoothDevice? device = ref.read(bluetoothProvider).myConnectedDevice;
+    if(device != null){
+      ref.read(bluetoothProvider.notifier).setupListeners(device);
+    } else {
+      print("Null");
+    }
+  }
+  // void _dispose() {
+  //   print("dispose");
+  //   ref.read(bluetoothProvider.notifier).cancelNotificationsSubscription();
+  // }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +57,13 @@ class SwingScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
+          leading: IconButton(onPressed: () {
+            ref.read(bluetoothProvider.notifier).cancelNotificationsSubscription();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          }, icon: const Icon(Icons.arrow_back)),
           backgroundColor: Colors.transparent,
           iconTheme: const IconThemeData(
             color: Colors.white,
@@ -28,7 +71,11 @@ class SwingScreen extends StatelessWidget {
           actions: [
             OutlinedButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const SwingResultScreen()));
+                ref.read(bluetoothProvider.notifier).cancelNotificationsSubscription();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SwingResultScreen()),
+                );
               },
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.white,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:golf_accelerator_app/screens/swing/swing.dart';
 import 'package:golf_accelerator_app/screens/swing_result/local_widgets/stats_row.dart';
 import 'package:golf_accelerator_app/widgets/flat_button.dart';
 
@@ -18,8 +19,13 @@ class SwingResultScreen extends StatelessWidget {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-
         appBar: AppBar(
+          leading: IconButton(onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const SwingScreen()),
+            );
+          }, icon: Icon(Icons.arrow_back)),
           backgroundColor: Colors.transparent,
           iconTheme: const IconThemeData(
             color: Colors.white,
