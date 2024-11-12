@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:golf_accelerator_app/screens/home/local_widgets/carousel_buttons.dart';
 import 'package:golf_accelerator_app/screens/home/local_widgets/list_tile.dart';
+import '../../models/bluetooth.dart';
 import '../../theme/app_colors.dart';
 import '../debug/debug.dart';
 import '../login/login.dart';
@@ -10,14 +13,14 @@ import '../results/results.dart';
 import '../scan/scan.dart';
 import '../swing/swing.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   // Define the carousel screens and associated navigation actions
   final Map<String, Widget> carouselScreens = {
