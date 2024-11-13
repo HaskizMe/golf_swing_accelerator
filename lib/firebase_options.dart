@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyANz2XtVsLxmOrGSvWZGRmJzi-jNNs5RtI',
-    appId: '1:1048309130949:android:03c86cb2fff857867f32ac',
+    appId: '1:1048309130949:android:196f2f66e3d4a4847f32ac',
     messagingSenderId: '1048309130949',
     projectId: 'golf-accelerator',
     storageBucket: 'golf-accelerator.firebasestorage.app',
@@ -64,6 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1048309130949',
     projectId: 'golf-accelerator',
     storageBucket: 'golf-accelerator.firebasestorage.app',
+    iosClientId: '1048309130949-anf3jc959v2hk3vdkuu3b7lcgqrvq58v.apps.googleusercontent.com',
     iosBundleId: 'com.golfaccelerator.golfAcceleratorApp',
   );
 

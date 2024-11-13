@@ -59,10 +59,11 @@ class _SwingScreenState extends ConsumerState<SwingScreen> {
         appBar: AppBar(
           leading: IconButton(onPressed: () {
             ref.read(bluetoothProvider.notifier).cancelNotificationsSubscription();
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            );
+            Navigator.pop(context);
+            // Navigator.pushReplacement(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => const HomeScreen()),
+            // );
           }, icon: const Icon(Icons.arrow_back)),
           backgroundColor: Colors.transparent,
           iconTheme: const IconThemeData(
@@ -72,10 +73,11 @@ class _SwingScreenState extends ConsumerState<SwingScreen> {
             OutlinedButton(
               onPressed: () {
                 ref.read(bluetoothProvider.notifier).cancelNotificationsSubscription();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SwingResultScreen()),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const SwingResultScreen()));
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => const SwingResultScreen()),
+                // );
               },
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.white,

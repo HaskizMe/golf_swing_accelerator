@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:golf_accelerator_app/screens/home/local_widgets/carousel_buttons.dart';
 import 'package:golf_accelerator_app/screens/home/local_widgets/list_tile.dart';
+import 'package:golf_accelerator_app/services/auth_service.dart';
 import '../../models/bluetooth.dart';
 import '../../theme/app_colors.dart';
 import '../debug/debug.dart';
@@ -21,6 +22,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final _auth = AuthService();
 
   // Define the carousel screens and associated navigation actions
   final Map<String, Widget> carouselScreens = {
@@ -254,13 +256,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.red),
                       splashColor: Colors.red.withOpacity(.3),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => const LoginScreen()),
-                              (Route<dynamic> route) => false, // This condition removes all previous routes.
-                        );
+                      onTap: () async {
+                        await _auth.signout();
+                        // Navigator.pop(context);
+                        // Navigator.pushAndRemoveUntil(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        //       (Route<dynamic> route) => false, // This condition removes all previous routes.
+                        // );
                       },
                     )
                   ],

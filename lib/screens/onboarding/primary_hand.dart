@@ -38,7 +38,6 @@ class _PrimaryHandState extends ConsumerState<PrimaryHand> {
 
   @override
   Widget build(BuildContext context) {
-    final account = ref.watch(accountProvider);
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
