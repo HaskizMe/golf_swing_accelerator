@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 
-class SignInButton extends StatefulWidget {
+class SignInButton extends StatelessWidget {
   final Widget image;
   final String text;
-  const SignInButton({super.key, required this.text, required this.image});
+  final VoidCallback onTap;
+  const SignInButton({super.key, required this.text, required this.image, required this.onTap});
 
-  @override
-  State<SignInButton> createState() => _SignInButtonState();
-}
-
-class _SignInButtonState extends State<SignInButton> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       child: OutlinedButton(
-          onPressed: () {},
+          onPressed: () => onTap(),
           style: OutlinedButton.styleFrom(
             overlayColor: Colors.black
           ),
@@ -22,9 +18,9 @@ class _SignInButtonState extends State<SignInButton> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                widget.image,
+                image,
                 const SizedBox(width: 20,),
-                Text(widget.text, style: TextStyle(color: Colors.black),)
+                Text(text, style: TextStyle(color: Colors.black),)
               ],
 
             ),

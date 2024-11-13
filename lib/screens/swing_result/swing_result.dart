@@ -21,10 +21,11 @@ class SwingResultScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           leading: IconButton(onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const SwingScreen()),
-            );
+            Navigator.pop(context);
+            // Navigator.pushReplacement(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => const SwingScreen()),
+            // );
           }, icon: Icon(Icons.arrow_back)),
           backgroundColor: Colors.transparent,
           iconTheme: const IconThemeData(
