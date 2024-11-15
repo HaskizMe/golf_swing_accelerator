@@ -6,7 +6,7 @@ part of 'device.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$golfDeviceHash() => r'05f9acced4dd61153199af0692029361d4819c5d';
+String _$golfDeviceHash() => r'e4ea681380e6d07c9b5b58f6149002943a52e798';
 
 /// See also [GolfDevice].
 @ProviderFor(GolfDevice)

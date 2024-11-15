@@ -26,7 +26,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="28"/>
 
     <application
-        android:label="golf_accelerator_app"
+        android:label="Golf Swing Accelerator"
         android:icon="@mipmap/ic_launcher"
         android:name="${applicationName}">
 

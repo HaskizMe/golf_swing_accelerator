@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:golf_accelerator_app/models/account.dart';
 import 'package:golf_accelerator_app/screens/onboarding/primary_hand.dart';
 
 import '../../theme/app_colors.dart';
 import '../../widgets/flat_button.dart';
 
-class GolferSkill extends StatefulWidget {
+class GolferSkill extends ConsumerWidget {
   const GolferSkill({super.key});
 
   @override
-  State<GolferSkill> createState() => _GolferSkillState();
-}
-
-class _GolferSkillState extends State<GolferSkill> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(colors: [AppColors.blue, AppColors.lightBlue],
@@ -30,14 +27,17 @@ class _GolferSkillState extends State<GolferSkill> {
                 const Text("What type of golfer are you?", style: TextStyle(color: Colors.white, fontSize: 20),),
                 const SizedBox(height: 50,),
                 CustomFlatButton(title: "Beginner", onTap: () {
+                  ref.read(accountProvider.notifier).setSkillLevel("beginner");
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const PrimaryHand()));
                 },),
                 const SizedBox(height: 20,),
                 CustomFlatButton(title: "Moderate", onTap: () {
+                  ref.read(accountProvider.notifier).setSkillLevel("moderate");
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const PrimaryHand()));
                 },),
                 const SizedBox(height: 20,),
                 CustomFlatButton(title: "Advanced", onTap: () {
+                  ref.read(accountProvider.notifier).setSkillLevel("advanced");
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const PrimaryHand()));
                 },),
 

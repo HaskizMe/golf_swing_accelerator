@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:golf_accelerator_app/models/account.dart';
 import 'package:golf_accelerator_app/screens/home/home.dart';
+import 'package:golf_accelerator_app/services/auth_service.dart';
 import '../../theme/app_colors.dart';
 
-class CalibrateClub extends StatefulWidget {
+class CalibrateClub extends ConsumerStatefulWidget {
   const CalibrateClub({super.key});
 
   @override
-  State<CalibrateClub> createState() => _CalibrateClubState();
+  ConsumerState<CalibrateClub> createState() => _CalibrateClubState();
 }
 
-class _CalibrateClubState extends State<CalibrateClub> {
+class _CalibrateClubState extends ConsumerState<CalibrateClub> {
   bool _isTapped = false;
 
   void _onTapDown(TapDownDetails details) {
@@ -19,10 +22,28 @@ class _CalibrateClubState extends State<CalibrateClub> {
     });
   }
 
-  void _onTapUp(TapUpDetails details) {
-    setState(() {
-      _isTapped = false;
+  Future<void> _onTapUp(TapUpDetails details) async {
+    final account = ref.read(accountProvider.notifier);
+
+    setState(() => _isTapped = false);
+
+    account.setCalibrated(true);
+    String? skillLevel = account.skillLevel;
+    String? primaryHand = account.primaryHand;
+    double? heightInCm = account.height;
+    bool onBoardingIsComplete = false;
+    if(skillLevel != null && primaryHand != null && heightInCm != null){
+      onBoardingIsComplete = true;
+    }
+
+    AuthService auth = AuthService();
+    await auth.updateUserProperties({
+      'skillLevel': skillLevel,
+      'primaryHand': primaryHand,
+      'onboardingComplete': onBoardingIsComplete,
+      'heightCm': heightInCm,
     });
+
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const HomeScreen()),
