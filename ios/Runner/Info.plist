@@ -38,8 +38,6 @@
     </array>
     <!-- End of Combined Sign-in Section -->
 
-
-
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

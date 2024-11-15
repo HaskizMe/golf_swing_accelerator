@@ -7,7 +7,6 @@ import 'package:golf_accelerator_app/screens/onboarding/calibrate_club.dart';
 import 'package:golf_accelerator_app/screens/onboarding/local_widgets/primary_hand_button.dart';
 import 'package:golf_accelerator_app/utils/error_dialog.dart';
 import '../../theme/app_colors.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 class PrimaryHand extends ConsumerStatefulWidget {
   const PrimaryHand({super.key});
@@ -21,6 +20,7 @@ class _PrimaryHandState extends ConsumerState<PrimaryHand> {
   String selectedHand = ""; // Stores the selected hand: "Left" or "Right"
   int? feet;
   int? inches;
+  double? totalHeightInCm;
 
   @override
   void dispose() {
@@ -28,7 +28,7 @@ class _PrimaryHandState extends ConsumerState<PrimaryHand> {
     super.dispose();
   }
 
-  // Function to convert height from cm to ft and in format
+  // // Function to convert height from cm to ft and in format
   String _convertHeightToFeetInches(double cm) {
     final totalInches = (cm / 2.54).round(); // Convert cm to inches
     feet = totalInches ~/ 12; // Get the feet part
@@ -109,6 +109,7 @@ class _PrimaryHandState extends ConsumerState<PrimaryHand> {
                   ),
                   const SizedBox(height: 30),
 
+                  /// Height box and cupertino height picker
                   SizedBox(
                     width: 200,
                     child: TextField(
@@ -121,6 +122,7 @@ class _PrimaryHandState extends ConsumerState<PrimaryHand> {
                           onHeightChanged: (cm) {
                             setState(() {
                               _heightController.text = _convertHeightToFeetInches(cm);
+                              totalHeightInCm = cm;
                             });
                           },
                         );
@@ -153,7 +155,7 @@ class _PrimaryHandState extends ConsumerState<PrimaryHand> {
                     child: ElevatedButton(
                       onPressed: () {
                         if(feet != null && inches != null && selectedHand.isNotEmpty) {
-                          ref.read(accountProvider.notifier).setHeight(feet!, inches!);
+                          ref.read(accountProvider.notifier).setHeight(totalHeightInCm!);
                           ref.read(accountProvider.notifier).setPrimaryHand(selectedHand);
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const CalibrateClub()));
                         } else {

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:golf_accelerator_app/models/swing_data.dart';
 import 'package:golf_accelerator_app/screens/home/local_widgets/carousel_buttons.dart';
 import 'package:golf_accelerator_app/screens/home/local_widgets/list_tile.dart';
 import 'package:golf_accelerator_app/services/auth_service.dart';
+import 'package:golf_accelerator_app/services/firestore_service.dart';
 import '../../models/bluetooth.dart';
 import '../../theme/app_colors.dart';
 import '../debug/debug.dart';
@@ -195,6 +197,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                     /// Carousel Buttons
                     const SizedBox(height: 40),
+                    // ElevatedButton(onPressed: () async {
+                    //   FirestoreService test = FirestoreService();
+                    //   SwingData s1 = SwingData(speed: 100, swingPoints: [0,35,22,5,1,22,5]);
+                    //   SwingData s2 = SwingData(speed: 120, swingPoints: [1,33,22,1,1,22,2]);
+                    //   SwingData s3 = SwingData(speed: 130, swingPoints: [2,33,22,1,1,22,2]);
+                    //   SwingData s4 = SwingData(speed: 60, swingPoints: [3,33,22,1,1,22,2]);
+                    //
+                    //   await test.addSwing(s1);
+                    //   await test.addSwing(s2);
+                    //
+                    //   await test.addSwing(s3);
+                    //   await test.addSwing(s4);
+                    //
+                    // }, child: Text("Test")),
                     Expanded(
                       child: SizedBox(
                         child: CarouselView(
@@ -257,6 +273,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.red),
                       splashColor: Colors.red.withOpacity(.3),
                       onTap: () async {
+                        print("log out");
                         await _auth.signout();
                         // Navigator.pop(context);
                         // Navigator.pushAndRemoveUntil(

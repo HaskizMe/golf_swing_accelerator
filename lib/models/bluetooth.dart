@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:golf_accelerator_app/models/device.dart';
+import 'package:golf_accelerator_app/providers/device_collecting_status.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'bluetooth.g.dart';
 
@@ -42,9 +43,9 @@ class Bluetooth extends _$Bluetooth{
       myConnectedDevice = device;
       var connectionSubscription = device.connectionState.listen((BluetoothConnectionState state) async {
         if (state == BluetoothConnectionState.disconnected) {
-          //Get.to(() => const ConnectDevice(wasDisconnected: true,));
           print("Device Disconnected");
           print("Error disconnection description: ${device.disconnectReason}");
+          ref.read(deviceCollectingStatusProvider.notifier).stopReceivingData(); // Turns off loader if device gets disconnected by accident
           myConnectedDevice = null;
         } else if (state == BluetoothConnectionState.connected) {
           success = true;
@@ -120,18 +121,14 @@ class Bluetooth extends _$Bluetooth{
 
     // This sends a command to the device to enable notifications. So that the below code can read value changes
     customCharacteristicSubscription = customCharacteristic.onValueReceived.listen((value) {
-      /// This is where I will add the code to get the battery percentage. Right now
-      /// this is only called when readFromDevice() is called anywhere in the program.
-      /// I need to add a notifier function to the Firmware
-      //print("Characteristic received: $value");
-      String data = bytes2Str(value);
-      //print(data);
+      /// This listens to any changes that is received from the golf trainer device.
+      /// When we receive data we will do something with it.
+      print("Characteristic received from device: $value");
+      String data = bytes2Str(value); // Translates data into a string of hex values
       final device = ref.read(golfDeviceProvider.notifier);
+
+      // Pass all the data received from device here to handle it
       device.handleSwingData(data);
-      //device.handleSwingDataPoints(data);
-      //device.handleEndOfSwingData(data);
-      // packets++;
-      // print(packets);
     });
 
     // cleanup: cancel subscription when disconnected

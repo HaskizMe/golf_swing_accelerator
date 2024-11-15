@@ -37,47 +37,73 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _confirmPassword.dispose();
   }
 
-  void navigateToHome(){
-    // navigation logic
-    setState(() => isLoading = false);
-
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-          (Route<dynamic> route) => false, // This condition removes all previous routes.
-    );
+  @override
+  void initState(){
+    super.initState();
   }
 
   Future<void> signUpWithEmail() async {
     setState(() => isLoading = true);
 
     // Sign up logic
-    if(_password.text != _confirmPassword.text){
-      showErrorDialog(context: context, errorMessage: "Passwords Didn't Match", solution: "Make sure passwords match");
-    } else{
-      String? message = await _auth.signup(email: _email.text, password: _password.text, context: context);
-      if(message == null) {
+    if (_password.text != _confirmPassword.text) {
+      if (mounted) {
+        showErrorDialog(
+          context: context,
+          errorMessage: "Passwords Didn't Match",
+          solution: "Make sure passwords match",
+        );
+      }
+    } else {
+      String? message = await _auth.signup(
+        email: _email.text,
+        password: _password.text,
+        context: context,
+      );
+
+      if (message == null) {
         setState(() {
           isSignUpMode = false;
         });
       } else {
-        showErrorDialog(context: context, errorMessage: "Sign Up Failed", solution: message!);
+        if (mounted) {
+          showErrorDialog(
+            context: context,
+            errorMessage: "Sign Up Failed",
+            solution: message,
+          );
+        }
       }
     }
-    setState(() => isLoading = false);
 
+    if (mounted) {
+      setState(() => isLoading = false);
+    }
   }
 
   Future<void> signInWithEmail() async {
+    if (!mounted) return; // Check if the widget is still mounted
     setState(() => isLoading = true);
 
-    String? response = await _auth.signin(email: _email.text, password: _password.text, context: context);
-    if(response == null) {
-      navigateToHome();
-    } else {
-      showErrorDialog(context: context, errorMessage: "Sign In Failed", solution: response);
+    String? response = await _auth.signin(
+      email: _email.text,
+      password: _password.text,
+      context: context,
+    );
+
+    if (response != null) {
+      if (mounted) {
+        showErrorDialog(
+          context: context,
+          errorMessage: "Sign In Failed",
+          solution: response,
+        );
+      }
     }
-    setState(() => isLoading = false);
+
+    if (mounted) {
+      setState(() => isLoading = false);
+    }
   }
 
   @override
@@ -155,13 +181,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       text: 'Sign in With Google',
                       image: Image.asset("assets/google1.png"),
                       onTap: () async {
+                        // Shows loader
                         setState(() => isLoading = true);
+                        // Sign in with google
+                        await _auth.signInWithGoogle();
 
-                        UserCredential? userCredential = await _auth.signInWithGoogle();
-                        if(userCredential != null){
-                          navigateToHome();
+                        // If successful it should sign in automatically and
+                        // we shouldn't set state if set state is called after we have navigated to a new screen.
+                        // That's why we check if the tree is still mounted
+                        if(mounted){
+                          setState(() => isLoading = false);
                         }
-                        setState(() => isLoading = false);
 
                       },
                     ),
@@ -170,18 +200,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       text: 'Sign in With Facebook',
                       image: SvgPicture.asset("assets/facebook 3.svg"),
                       onTap: () async {
+                        // Shows loader
                         setState(() => isLoading = true);
+                        // Sign in with facebook
+                        await _auth.signInWithFacebook();
 
-                        UserCredential? userCredential = await _auth.signInWithFacebook();
-                        if(userCredential != null){
-                          navigateToHome();
+                        // If successful it should sign in automatically and
+                        // we shouldn't set state if set state is called after we have navigated to a new screen.
+                        // That's why we check if the tree is still mounted
+                        if(mounted){
+                          setState(() => isLoading = false);
                         }
-                        setState(() => isLoading = false);
 
                       },
                     ),
                     const SizedBox(height: 5,),
-                    SignInButton(text: 'Sign in With Apple', image: SvgPicture.asset("assets/apple-logo 1.svg"), onTap: () {  },),
+                    SignInButton(
+                      text: 'Sign in With Apple',
+                      image: SvgPicture.asset("assets/apple-logo 1.svg"),
+                      onTap: () async {
+                        // Shows loader
+                        setState(() => isLoading = true);
+                        // Sign in with apple
+                        //await _auth.signInWithGoogle();
+
+                        // If successful it should sign in automatically and
+                        // we shouldn't set state if set state is called after we have navigated to a new screen.
+                        // That's why we check if the tree is still mounted
+                        if(mounted){
+                          setState(() => isLoading = false);
+                        }
+                      },
+                    ),
                     const SizedBox(height: 5,),
 
                     Row(
