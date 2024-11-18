@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/device.dart';
 import 'package:golf_accelerator_app/providers/swings.dart';
 import 'package:golf_accelerator_app/screens/swing_result/swing_result.dart';
+import 'package:golf_accelerator_app/services/firestore_service.dart';
 import '../../theme/app_colors.dart';
 
 class ResultsScreen extends ConsumerStatefulWidget {
@@ -47,30 +48,61 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
             itemCount: swings.length,
             itemBuilder: (context, index) {
               final swing = swings[index];
-              return InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SwingResultScreen(quickView: false, swing: swing,),
+              return Dismissible(
+                key: ValueKey(swing.swingId), // Ensure each item has a unique key
+                direction: DismissDirection.endToStart, // Allow swiping only to the right
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: const Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+                onDismissed: (direction) {
+                  // Handle the deletion
+                  final db = FirestoreService();
+                  db.deleteSwing(swing.swingId!);
+                  //ref.read()
+
+                  // Show a snackbar
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Swing ${index + 1} deleted"),
+                      duration: const Duration(seconds: 2),
                     ),
                   );
                 },
-                child: Card(
-                  color: Colors.white.withOpacity(0.9),
-                  margin: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: ListTile(
-                    title: Text(
-                      "Swing ${index + 1}",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Speed: ${swing.speed} mph"),
-                        Text("Carry Distance: ${swing.getCarryDistance()} yards"),
-                        Text("Total Distance: ${swing.getTotalDistance()} yards"),
-                      ],
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SwingResultScreen(
+                          quickView: false,
+                          swing: swing,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    color: Colors.white.withOpacity(0.9),
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      title: Text(
+                        "Swing ${index + 1}",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Speed: ${swing.speed} mph"),
+                          Text("Carry Distance: ${swing.getCarryDistance()} yards"),
+                          Text("Total Distance: ${swing.getTotalDistance()} yards"),
+                        ],
+                      ),
                     ),
                   ),
                 ),
