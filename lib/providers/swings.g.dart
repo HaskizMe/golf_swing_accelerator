@@ -6,7 +6,7 @@ part of 'swings.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$swingsNotifierHash() => r'5179fb921bd54d4291650f947a7b2db19b3b6fe8';
+String _$swingsNotifierHash() => r'7baf14d8c94350928629c751e9fde9e4096297a4';
 
 /// See also [SwingsNotifier].
 @ProviderFor(SwingsNotifier)

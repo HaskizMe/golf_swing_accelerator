@@ -8,6 +8,7 @@ import 'package:golf_accelerator_app/providers/swings.dart';
 import 'package:golf_accelerator_app/screens/results/results.dart';
 import 'package:golf_accelerator_app/screens/swing_result/swing_result.dart';
 import 'package:golf_accelerator_app/services/firestore_service.dart';
+import 'package:golf_accelerator_app/utils/utility_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../main.dart';
@@ -104,10 +105,15 @@ class GolfDevice extends _$GolfDevice {
 
   // Handles swing points data
   void handleSwingPoints(String data) {
+    print(data);
     print("Getting swing z data points");
     for (int i = 18; i < data.length; i += 4) {
-      String segment = data.substring(i, i + 4);
-      int zCombinedValue = int.parse(segment, radix: 16);
+      String hexSegment = data.substring(i, i + 4);
+      print(hexSegment);
+
+      int zCombinedValue = hexToString(hexSegment);
+      print("z combined value: $zCombinedValue");
+
       double zGForce = zCombinedValue / 100;
       tempSwingDataPoints.add(zGForce);
     }
@@ -120,7 +126,7 @@ class GolfDevice extends _$GolfDevice {
 
     String ts = data.substring(4, 16);
     String len = data.substring(16, 18);
-    int combinedValue = int.parse(data.substring(18, 22), radix: 16);
+    int combinedValue = hexToString(data.substring(18, 22));
     double gForce = combinedValue / 100.0;
 
     int totalHeightInches = (_account.heightFt! * 12) + _account.heightIn!;
@@ -135,4 +141,6 @@ class GolfDevice extends _$GolfDevice {
     tempSpeed = mph.toInt();
     tempTimeStamp = ts;
   }
+
+
 }

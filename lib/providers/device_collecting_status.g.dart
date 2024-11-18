@@ -9,7 +9,10 @@ part of 'device_collecting_status.dart';
 String _$deviceCollectingStatusHash() =>
     r'fba0a13eaa7845130ac430b7bf5c46ffa16daf07';
 
-/// See also [DeviceCollectingStatus].
+/// This riverpod provider is to help update any ui elements when the device is
+/// collecting data. When we set it to true we will show a loader on the swing screen
+///
+/// Copied from [DeviceCollectingStatus].
 @ProviderFor(DeviceCollectingStatus)
 final deviceCollectingStatusProvider =
     NotifierProvider<DeviceCollectingStatus, bool>.internal(

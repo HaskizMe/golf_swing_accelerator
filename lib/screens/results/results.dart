@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/device.dart';
 import 'package:golf_accelerator_app/providers/swings.dart';
+import 'package:golf_accelerator_app/screens/swing_result/swing_result.dart';
 import '../../theme/app_colors.dart';
 
 class ResultsScreen extends ConsumerStatefulWidget {
@@ -46,21 +47,31 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
             itemCount: swings.length,
             itemBuilder: (context, index) {
               final swing = swings[index];
-              return Card(
-                color: Colors.white.withOpacity(0.9),
-                margin: const EdgeInsets.symmetric(vertical: 8.0),
-                child: ListTile(
-                  title: Text(
-                    "Swing ${index + 1}",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Speed: ${swing.speed} mph"),
-                      Text("Carry Distance: ${swing.getCarryDistance()} yards"),
-                      Text("Total Distance: ${swing.getTotalDistance()} yards"),
-                    ],
+              return InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SwingResultScreen(quickView: false, swing: swing,),
+                    ),
+                  );
+                },
+                child: Card(
+                  color: Colors.white.withOpacity(0.9),
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ListTile(
+                    title: Text(
+                      "Swing ${index + 1}",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Speed: ${swing.speed} mph"),
+                        Text("Carry Distance: ${swing.getCarryDistance()} yards"),
+                        Text("Total Distance: ${swing.getTotalDistance()} yards"),
+                      ],
+                    ),
                   ),
                 ),
               );

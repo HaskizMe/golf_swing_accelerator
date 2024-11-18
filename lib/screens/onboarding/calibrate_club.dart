@@ -44,6 +44,7 @@ class _CalibrateClubState extends ConsumerState<CalibrateClub> {
       'heightCm': heightInCm,
     });
 
+    if(!mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const HomeScreen()),
