@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:golf_accelerator_app/models/swing_data.dart';
 import 'package:golf_accelerator_app/screens/swing_result/local_widgets/stats_row.dart';
+import 'package:golf_accelerator_app/screens/swing_result/local_widgets/swing_graph.dart';
 import 'package:golf_accelerator_app/widgets/flat_button.dart';
 import '../../theme/app_colors.dart';
+import '../home/home.dart';
 
 class SwingResultScreen extends StatefulWidget {
   final bool quickView;
@@ -72,61 +75,77 @@ class _SwingResultScreenState extends State<SwingResultScreen> {
           children: [
             Center(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 40, 20, 40),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Spacing applied to all elements
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if(widget.quickView)
-                      const Text(
-                        "Nice Swing!",
-                        style: TextStyle(color: Colors.white, fontSize: 34),
+                padding: const EdgeInsets.fromLTRB(20, 40, 20, 10),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Spacing applied to all elements
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      if(widget.quickView)
+                        const Text(
+                          "Nice Swing!",
+                          style: TextStyle(color: Colors.white, fontSize: 34),
+                        ),
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.transparent,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        width: 200,
+                        height: 200,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '${widget.swing.speed}',
+                              style: const TextStyle(color: Colors.white, fontSize: 70),
+                            ),
+                            const Text(
+                              "MPH",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
                       ),
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.transparent,
-                        border: Border.all(color: Colors.white, width: 2),
-                      ),
-                      width: 200,
-                      height: 200,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Column(
                         children: [
-                          Text(
-                            '${widget.swing.speed}',
-                            style: TextStyle(color: Colors.white, fontSize: 70),
-                          ),
-                          const Text(
-                            "MPH",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
-                          )
+                          const SizedBox(height: 20),
+                          CustomStatsRow(title: 'Total Carry Distance', result: '${widget.swing.getCarryDistance()} Yards'),
+                          const SizedBox(height: 15),
+                          CustomStatsRow(title: 'Total Distance', result: '${widget.swing.getTotalDistance()} Yards'),
+                          const SizedBox(height: 20),
+
+                          const Text("Swing Graph", style: TextStyle(color: Colors.white, fontSize: 20),),
+                          const SizedBox(height: 10,),
+                          SwingGraph(swing: widget.swing),
+                          const SizedBox(height: 30,)
                         ],
                       ),
-                    ),
-                    Column(
-                      children: [
-                        CustomStatsRow(title: 'Total Carry Distance', result: '${widget.swing.getCarryDistance()}'),
-                        SizedBox(height: 15),
-                        CustomStatsRow(title: 'Total Distance', result: '${widget.swing.getTotalDistance()}'),
-                        SizedBox(height: 15),
-                      ],
-                    ),
-                    Visibility(
-                      visible: !widget.quickView,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          CustomFlatButton(title: "Reswing", onTap: () {}, width: 110),
-                          CustomFlatButton(title: "Home", onTap: () {}, width: 110),
-                          CustomFlatButton(title: "Result", onTap: () {}, width: 110),
-                        ],
-                      ),
-                    ),
-                  ],
+                      // Visibility(
+                      //   visible: !widget.quickView,
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //     children: [
+                      //       CustomFlatButton(title: "Reswing", onTap: () {}, width: 110),
+                      //       CustomFlatButton(title: "Home", onTap: () {
+                      //         Navigator.pushAndRemoveUntil(
+                      //           context,
+                      //           MaterialPageRoute(builder: (context) => const HomeScreen()),
+                      //               (Route<dynamic> route) => false, // This condition removes all previous routes.
+                      //         );
+                      //       }, width: 110),
+                      //       CustomFlatButton(title: "Graph", onTap: () {
+                      //         Navigator.push(context, MaterialPageRoute(builder: (context) => SwingGraphScreen(swing: widget.swing)),);
+                      //       }, width: 110),
+                      //     ],
+                      //   ),
+                      // ),
+                    ],
+                  ),
                 ),
               ),
             ),
