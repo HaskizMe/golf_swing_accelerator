@@ -23,6 +23,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 /// It also helps to update states based on changes. Its really helpful but can be confusing so take your time with it.
 
 Future<void> main() async {
+  print("starting");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

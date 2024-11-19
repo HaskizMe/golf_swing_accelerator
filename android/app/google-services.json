@@ -7,45 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1048309130949:android:03c86cb2fff857867f32ac",
+        "mobilesdk_app_id": "1:1048309130949:android:aec90a7a866ea54a7f32ac",
         "android_client_info": {
-          "package_name": "com.golfaccelerator.golf_accelerator_ap"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1048309130949-fmdspntk5hebubq5o5hrhph14rtckbt1.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyANz2XtVsLxmOrGSvWZGRmJzi-jNNs5RtI"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1048309130949-fmdspntk5hebubq5o5hrhph14rtckbt1.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "1048309130949-anf3jc959v2hk3vdkuu3b7lcgqrvq58v.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.golfaccelerator.golfAcceleratorApp"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1048309130949:android:196f2f66e3d4a4847f32ac",
-        "android_client_info": {
-          "package_name": "com.golfaccelerator.golf_accelerator_app"
+          "package_name": "com.golfswingaccelerator1.app"
         }
       },
       "oauth_client": [
