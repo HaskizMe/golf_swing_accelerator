@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyANz2XtVsLxmOrGSvWZGRmJzi-jNNs5RtI',
-    appId: '1:1048309130949:android:196f2f66e3d4a4847f32ac',
+    appId: '1:1048309130949:android:aec90a7a866ea54a7f32ac',
     messagingSenderId: '1048309130949',
     projectId: 'golf-accelerator',
     storageBucket: 'golf-accelerator.firebasestorage.app',
@@ -60,12 +60,13 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBFq8D-8JEbp-zOUTB2aht-yAy7TPsdyq4',
-    appId: '1:1048309130949:ios:436acace90bdae987f32ac',
+    appId: '1:1048309130949:ios:a3b1850d537897ce7f32ac',
     messagingSenderId: '1048309130949',
     projectId: 'golf-accelerator',
     storageBucket: 'golf-accelerator.firebasestorage.app',
-    iosClientId: '1048309130949-anf3jc959v2hk3vdkuu3b7lcgqrvq58v.apps.googleusercontent.com',
-    iosBundleId: 'com.golfaccelerator.golfAcceleratorApp',
+    androidClientId: '1048309130949-3qtd11p4jj0dc6mtk5if9k20j7posjpa.apps.googleusercontent.com',
+    iosClientId: '1048309130949-q29vbn1vt2sumopah2c92eq5o1rd9v78.apps.googleusercontent.com',
+    iosBundleId: 'com.golfswingaccelerator1.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(

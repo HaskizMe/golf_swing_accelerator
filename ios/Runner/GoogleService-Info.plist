@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1048309130949-anf3jc959v2hk3vdkuu3b7lcgqrvq58v.apps.googleusercontent.com</string>
+	<string>1048309130949-q29vbn1vt2sumopah2c92eq5o1rd9v78.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1048309130949-anf3jc959v2hk3vdkuu3b7lcgqrvq58v</string>
+	<string>com.googleusercontent.apps.1048309130949-q29vbn1vt2sumopah2c92eq5o1rd9v78</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1048309130949-3qtd11p4jj0dc6mtk5if9k20j7posjpa.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyBFq8D-8JEbp-zOUTB2aht-yAy7TPsdyq4</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.golfaccelerator.golfAcceleratorApp</string>
+	<string>com.golfswingaccelerator1.app</string>
 	<key>PROJECT_ID</key>
 	<string>golf-accelerator</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1048309130949:ios:436acace90bdae987f32ac</string>
+	<string>1:1048309130949:ios:a3b1850d537897ce7f32ac</string>
 </dict>
 </plist>

@@ -12,7 +12,7 @@
 
     <!-- Combined Google and Facebook Sign-in Section -->
     <key>GIDClientID</key>
-    <string>1048309130949-anf3jc959v2hk3vdkuu3b7lcgqrvq58v.apps.googleusercontent.com</string>
+    <string>1048309130949-q29vbn1vt2sumopah2c92eq5o1rd9v78.apps.googleusercontent.com</string>
 
     <key>CFBundleURLTypes</key>
     <array>
@@ -21,7 +21,7 @@
         <string>Editor</string>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.googleusercontent.apps.1048309130949-anf3jc959v2hk3vdkuu3b7lcgqrvq58v</string>
+          <string>com.googleusercontent.apps.1048309130949-q29vbn1vt2sumopah2c92eq5o1rd9v78</string>
           <string>fb1468514883834107</string>
         </array>
       </dict>
@@ -46,7 +46,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Golf Accelerator App</string>
+	<string>Golf Swing Accelerator</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -54,7 +54,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>golf_accelerator_app</string>
+	<string>Golf Swing Accelerator</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
