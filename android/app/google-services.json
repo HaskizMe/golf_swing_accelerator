@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1048309130949-q9bhhp3t705shiql1h7kfe2gppf6smao.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.golfswingaccelerator1.app",
+            "certificate_hash": "38a147d599d6e6f6ab1fd6f3291b7c3cb72abcdd"
+          }
+        },
+        {
           "client_id": "1048309130949-fmdspntk5hebubq5o5hrhph14rtckbt1.apps.googleusercontent.com",
           "client_type": 3
         }
