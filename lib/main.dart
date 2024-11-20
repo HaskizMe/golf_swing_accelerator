@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' show DeviceOrientation, SystemChrome, rootBundle;
 import 'package:golf_accelerator_app/models/account.dart';
 import 'package:golf_accelerator_app/screens/home/home.dart';
 import 'package:golf_accelerator_app/screens/login/login.dart';
@@ -27,15 +28,25 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true, // Ensure offline persistence is enabled
+  );
+  // Lock orientation to portrait mode
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) {
+    runApp(
       /// Provider scope is from riverpod. See riverpod documentation for more details
-      ProviderScope(
-        observers: [
-          // This allows me to see different statuses on my providers
-          MyObserver()
-        ],
-      child: const MyApp()
-  ));
+        ProviderScope(
+            observers: [
+              // This allows me to see different statuses on my providers
+              MyObserver()
+            ],
+            child: const MyApp()
+        )
+    );
+  });
 }
 
 

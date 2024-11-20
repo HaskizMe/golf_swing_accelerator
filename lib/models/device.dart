@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:golf_accelerator_app/models/account.dart';
 import 'package:golf_accelerator_app/models/swing_data.dart';
@@ -100,7 +101,7 @@ class GolfDevice extends _$GolfDevice {
       ),
     );
     print("Data points: $tempSwingDataPoints");
-    ref.read(swingsNotifierProvider.notifier).addSwing(swing);
+    //ref.read(swingsNotifierProvider.notifier).addSwing(swing);
   }
 
   // Handles swing points data

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -201,7 +203,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       image: SvgPicture.asset("assets/facebook 3.svg"),
                       onTap: () async {
                         // Shows loader
-                        setState(() => isLoading = true);
+                        //setState(() => isLoading = true);
                         // Sign in with facebook
                         await _auth.signInWithFacebook();
 
@@ -215,22 +217,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       },
                     ),
                     const SizedBox(height: 5,),
-                    SignInButton(
-                      text: 'Sign in With Apple',
-                      image: SvgPicture.asset("assets/apple-logo 1.svg"),
-                      onTap: () async {
-                        // Shows loader
-                        setState(() => isLoading = true);
-                        // Sign in with apple
-                        //await _auth.signInWithGoogle();
+                    Visibility(
+                      visible: Platform.isIOS,
+                      child: SignInButton(
+                        text: 'Sign in With Apple',
+                        image: SvgPicture.asset("assets/apple-logo 1.svg"),
+                        onTap: () async {
+                          // Shows loader
+                          //setState(() => isLoading = true);
+                          // Sign in with apple
+                          await _auth.signInWithApple();
 
-                        // If successful it should sign in automatically and
-                        // we shouldn't set state if set state is called after we have navigated to a new screen.
-                        // That's why we check if the tree is still mounted
-                        if(mounted){
-                          setState(() => isLoading = false);
-                        }
-                      },
+                          // If successful it should sign in automatically and
+                          // we shouldn't set state if set state is called after we have navigated to a new screen.
+                          // That's why we check if the tree is still mounted
+                          if(mounted){
+                            setState(() => isLoading = false);
+                          }
+                        },
+                      ),
                     ),
                     const SizedBox(height: 5,),
 
