@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/device.dart';
+import 'package:golf_accelerator_app/models/swing_data.dart';
 import 'package:golf_accelerator_app/providers/swings.dart';
 import 'package:golf_accelerator_app/screens/swing_result/swing_result.dart';
 import 'package:golf_accelerator_app/services/firestore_service.dart';
@@ -14,6 +15,22 @@ class ResultsScreen extends ConsumerStatefulWidget {
 }
 
 class _ResultsScreenState extends ConsumerState<ResultsScreen> {
+
+  void onSlideDismissed(SwingData swing){
+    // Handle the deletion
+    final db = FirestoreService();
+    db.deleteSwing(swing.swingId!);
+
+    // Show a snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Swing deleted"),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final swings = ref.watch(swingsNotifierProvider);
@@ -41,7 +58,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
               ? const Center(
             child: Text(
               "No swing data available.",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white, fontSize: 20),
             ),
           )
               : ListView.builder(
@@ -61,20 +78,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                     size: 30,
                   ),
                 ),
-                onDismissed: (direction) {
-                  // Handle the deletion
-                  final db = FirestoreService();
-                  db.deleteSwing(swing.swingId!);
-                  //ref.read()
-
-                  // Show a snackbar
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Swing ${index + 1} deleted"),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                },
+                onDismissed: (direction) => onSlideDismissed(swing),
                 child: InkWell(
                   onTap: () {
                     Navigator.push(
@@ -92,7 +96,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                     margin: const EdgeInsets.symmetric(vertical: 8.0),
                     child: ListTile(
                       title: Text(
-                        "Swing ${index + 1}",
+                        "${swing.createdAt?.toDate()}",
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(

@@ -44,6 +44,7 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
 
+
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
@@ -55,8 +56,26 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+
             </intent-filter>
         </activity>
+
+        <!-- Sign in with Apple callback activity -->
+        <activity
+            android:name="com.aboutyou.dart_packages.sign_in_with_apple.SignInWithAppleCallback"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Define your custom scheme and path -->
+                <data
+                    android:scheme="signinwithapple"
+                    android:path="callback" />
+            </intent-filter>
+        </activity>
+
 
         <!-- Meta-data for Flutter plugin registry -->
         <meta-data

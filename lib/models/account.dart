@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:golf_accelerator_app/models/swing_data.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../providers/swings.dart';
@@ -87,8 +90,56 @@ class Account extends _$Account {
     ref.read(accountProvider.notifier).initializeAccount(accountData);
 
     // Initialize Swings
-    if (accountData['swings'] != null) {
-      ref.read(swingsNotifierProvider.notifier).setSwings(accountData['swings']);
-    }
+    // if (accountData['swings'] != null) {
+    //   ref.read(swingsNotifierProvider.notifier).setSwings(accountData['swings']);
+    // }
+
+    // Start real-time listener for swings
+    await startSwingsListener();
+  }
+
+
+  /// Creates a listener on the swings so I can track if one was added or deleted and updates the UI
+  Future<void> startSwingsListener() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    final swingsNotifier = ref.read(swingsNotifierProvider.notifier);
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user?.uid)
+        .collection('swings')
+        .snapshots()
+        .listen((snapshot) {
+
+      for (var change in snapshot.docChanges) {
+        print("Changed: ${change.type.toString()}");
+        print("Change ${change.doc.data()!}");
+
+        if (change.type == DocumentChangeType.added) {
+          // Add new swing
+          print("SWING ADDED");
+
+          // Pass the document ID explicitly to SwingData
+          swingsNotifier.addSwing(
+            SwingData.fromJson({
+              ...change.doc.data()!,
+              'docId': change.doc.id, // Add the doc ID to the data
+            }),
+          );
+        } else if (change.type == DocumentChangeType.modified) {
+          // Update swing
+          swingsNotifier.updateSwing(
+            SwingData.fromJson({
+              ...change.doc.data()!,
+              'docId': change.doc.id, // Add the doc ID to the data
+            }),
+          );
+        } else if (change.type == DocumentChangeType.removed) {
+          print("SWING DELETED");
+          // Remove swing
+          swingsNotifier.removeSwing(change.doc.id);
+        }
+      }
+    });
   }
 }

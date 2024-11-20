@@ -49,6 +49,7 @@ class FirestoreService {
   }
 
   Future<void> deleteSwing(String docId) async {
+    print("doc id: $docId");
     if (_currentUser != null) {
       final swingsCollection = FirebaseFirestore.instance
           .collection('users')
