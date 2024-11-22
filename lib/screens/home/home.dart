@@ -124,7 +124,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.blue, AppColors.lightBlue],
+          colors: [AppColors.silverLakeBlue, AppColors.skyBlue],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -180,7 +180,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ElevatedButton(
                           onPressed: _previousItem,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.lighterBlue,
+                            backgroundColor: AppColors.carolinaBlue,
                             overlayColor: Colors.black,
                           ),
                           child: SvgPicture.asset("assets/Left.svg"),
@@ -188,7 +188,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ElevatedButton(
                           onPressed: _nextItem,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.lighterBlue,
+                            backgroundColor: AppColors.carolinaBlue,
                             overlayColor: Colors.black,
                           ),
                           child: SvgPicture.asset("assets/Right.svg"),
@@ -233,7 +233,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
             /// This handles the drawer on the top right of the screen
             endDrawer: Drawer(
-              backgroundColor: AppColors.lightererBlue,
+              backgroundColor: AppColors.babyBlue,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 70, 0, 0),
                 child: ListView(

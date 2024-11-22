@@ -23,7 +23,7 @@ class ProfilePicture extends StatelessWidget {
           // Background color
           Container(
             decoration: const BoxDecoration(
-              color: AppColors.blue, // Background color
+              color: AppColors.silverLakeBlue, // Background color
               shape: BoxShape.circle, // Keep the background circular
             ),
           ),

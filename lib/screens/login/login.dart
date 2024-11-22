@@ -11,7 +11,7 @@ import 'package:golf_accelerator_app/theme/app_colors.dart';
 import 'package:golf_accelerator_app/utils/error_dialog.dart';
 
 import 'local_widgets/sign_in_button.dart';
-import 'local_widgets/text_field.dart';
+import '../../widgets/text_field.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -146,7 +146,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       height: 50,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(colors: [AppColors.blue, AppColors.lightBlue]),
+                        gradient: const LinearGradient(colors: [AppColors.silverLakeBlue, AppColors.skyBlue]),
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: ElevatedButton(

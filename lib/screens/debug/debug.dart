@@ -34,7 +34,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.blue, AppColors.lightBlue],
+          colors: [AppColors.silverLakeBlue, AppColors.skyBlue],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),

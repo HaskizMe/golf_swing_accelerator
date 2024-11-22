@@ -60,4 +60,43 @@ class FirestoreService {
       print("Swing with ID $docId has been deleted.");
     }
   }
+
+  Future<void> updateAccountField(String field, dynamic value) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      print("No user is logged in");
+      return;
+    }
+
+    try {
+      // Update the specific field in the user's account document
+      await FirebaseFirestore.instance
+          .collection('users') // Access the 'users' collection
+          .doc(user.uid) // Target the logged-in user's document
+          .update({field: value}); // Update the field with the new value
+
+      print("Account field '$field' updated successfully");
+    } catch (e) {
+      print("Failed to update account field: $e");
+    }
+  }
+
+  Future<void> updateAccountFields(Map<String, dynamic> fields) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception("No user is logged in");
+    }
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .update(fields); // Update only the provided fields
+    } catch (e) {
+      throw Exception("Failed to update account fields: $e");
+    }
+  }
+
 }
