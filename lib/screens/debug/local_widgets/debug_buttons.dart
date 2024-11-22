@@ -18,7 +18,7 @@ class CustomDebugButton extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.all(0),
             foregroundColor: Colors.white,
-            backgroundColor: color ?? AppColors.teal,
+            backgroundColor: color ?? AppColors.moonstone,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),

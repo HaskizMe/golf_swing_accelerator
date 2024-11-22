@@ -15,7 +15,9 @@ class Account extends _$Account {
   String? _primaryHand;
   String? _skillLevel;
   String? _displayName;
+  late String _email;
   bool _isCalibrated = false;
+
 
   @override
   Account build() {
@@ -70,6 +72,39 @@ class Account extends _$Account {
     state = this; // Notify listeners of state change
   }
 
+  // Getter and setter for display name
+  String? get displayName => _displayName;
+
+  // Getter email
+  String? get email => _email;
+
+  void setDisplayName(String name) {
+    _displayName = name;
+    state = this; // Notify listeners of state change
+  }
+
+  /// Updates the account with new data
+  void updateAccount(Map<String, dynamic> updatedData) {
+    if (updatedData.containsKey('heightCm')) {
+      setHeight(updatedData['heightCm'] as double);
+    }
+    if (updatedData.containsKey('primaryHand')) {
+      setPrimaryHand(updatedData['primaryHand'] as String);
+    }
+    if (updatedData.containsKey('skillLevel')) {
+      setSkillLevel(updatedData['skillLevel'] as String);
+    }
+    if (updatedData.containsKey('displayName')) {
+      setDisplayName(updatedData['displayName'] as String);
+    }
+    if (updatedData.containsKey('onboardingComplete')) {
+      setCalibrated(updatedData['onboardingComplete'] as bool);
+    }
+
+    print("Account updated with new data: $updatedData");
+    state = this; // Notify listeners of state change
+  }
+
   /// Grabs all account info from database
   void initializeAccount(Map<String, dynamic> accountInfo) {
     if (accountInfo['heightCm'] != null) {
@@ -80,6 +115,7 @@ class Account extends _$Account {
     _primaryHand = accountInfo['primaryHand'] as String?;
     _skillLevel = accountInfo['skillLevel'] as String?;
     _isCalibrated = accountInfo['onboardingComplete'] as bool? ?? false;
+    _email = accountInfo['email'] as String;
 
     state = this; // Notify listeners of state change
   }
@@ -96,6 +132,7 @@ class Account extends _$Account {
 
     // Start real-time listener for swings
     await startSwingsListener();
+    await startAccountListener();
   }
 
 
@@ -113,7 +150,7 @@ class Account extends _$Account {
 
       for (var change in snapshot.docChanges) {
         print("Changed: ${change.type.toString()}");
-        print("Change ${change.doc.data()!}");
+        //print("Change ${change.doc.data()!}");
 
         if (change.type == DocumentChangeType.added) {
           // Add new swing
@@ -139,6 +176,39 @@ class Account extends _$Account {
           // Remove swing
           swingsNotifier.removeSwing(change.doc.id);
         }
+      }
+    });
+  }
+
+
+  /// Creates a listener on the account document to track changes and updates the UI
+  Future<void> startAccountListener() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      print("No user is logged in");
+      return;
+    }
+
+    final accountNotifier = ref.read(accountProvider.notifier);
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid) // Target only the logged-in user's document
+        .snapshots() // Listen to changes in the user's document
+        .listen((snapshot) {
+      if (!snapshot.exists) {
+        print("User document does not exist");
+        // Handle account deletion
+        //accountNotifier.removeAccount(user.uid);
+        return;
+      }
+
+      final accountData = snapshot.data();
+
+      if (accountData != null) {
+        //print("ACCOUNT DATA: $accountData");
+        // Update the account state in your notifier or UI
+        accountNotifier.updateAccount(accountData);
       }
     });
   }

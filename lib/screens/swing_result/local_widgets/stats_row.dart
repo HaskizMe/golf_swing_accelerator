@@ -21,12 +21,12 @@ class CustomStatsRow extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: TextStyle(color: AppColors.blue, fontWeight: FontWeight.bold, fontSize: 16),),
+            Text(title, style: TextStyle(color: AppColors.silverLakeBlue, fontWeight: FontWeight.bold, fontSize: 16),),
             Container(
               width: 150,
               height: 40,
               decoration: BoxDecoration(
-                  color: AppColors.blue,
+                  color: AppColors.silverLakeBlue,
                   borderRadius: BorderRadius.circular(10),
               ),
               child: Center(child: Text(result, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),)),

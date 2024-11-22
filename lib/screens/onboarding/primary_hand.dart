@@ -28,7 +28,7 @@ class _PrimaryHandState extends ConsumerState<PrimaryHand> {
     super.dispose();
   }
 
-  // // Function to convert height from cm to ft and in format
+  // Function to convert height from cm to ft and in format
   String _convertHeightToFeetInches(double cm) {
     final totalInches = (cm / 2.54).round(); // Convert cm to inches
     feet = totalInches ~/ 12; // Get the feet part
@@ -41,7 +41,7 @@ class _PrimaryHandState extends ConsumerState<PrimaryHand> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.blue, AppColors.lightBlue],
+          colors: [AppColors.silverLakeBlue, AppColors.skyBlue],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),

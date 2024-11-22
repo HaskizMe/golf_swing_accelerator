@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show DeviceOrientation, SystemChrome, rootBundle;
@@ -43,7 +44,10 @@ Future<void> main() async {
               // This allows me to see different statuses on my providers
               MyObserver()
             ],
-            child: const MyApp()
+            child: DevicePreview(
+              enabled: false,
+              builder: (context) => const MyApp(), // Wrap your app
+            ),
         )
     );
   });
@@ -111,6 +115,9 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      useInheritedMediaQuery: true,
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
       navigatorKey: navigatorKey, // Attach the navigator key
       home: const Scaffold(
         body: Center(

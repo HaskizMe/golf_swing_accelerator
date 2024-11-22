@@ -13,7 +13,7 @@ class GolferSkill extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(colors: [AppColors.blue, AppColors.lightBlue],
+          gradient: LinearGradient(colors: [AppColors.silverLakeBlue, AppColors.skyBlue],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           ),
@@ -27,17 +27,17 @@ class GolferSkill extends ConsumerWidget {
                 const Text("What type of golfer are you?", style: TextStyle(color: Colors.white, fontSize: 20),),
                 const SizedBox(height: 50,),
                 CustomFlatButton(title: "Beginner", onTap: () {
-                  ref.read(accountProvider.notifier).setSkillLevel("beginner");
+                  ref.read(accountProvider.notifier).setSkillLevel("Beginner");
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const PrimaryHand()));
                 },),
                 const SizedBox(height: 20,),
                 CustomFlatButton(title: "Moderate", onTap: () {
-                  ref.read(accountProvider.notifier).setSkillLevel("moderate");
+                  ref.read(accountProvider.notifier).setSkillLevel("Moderate");
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const PrimaryHand()));
                 },),
                 const SizedBox(height: 20,),
                 CustomFlatButton(title: "Advanced", onTap: () {
-                  ref.read(accountProvider.notifier).setSkillLevel("advanced");
+                  ref.read(accountProvider.notifier).setSkillLevel("Advanced");
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const PrimaryHand()));
                 },),
 

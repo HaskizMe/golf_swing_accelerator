@@ -46,7 +46,7 @@ class _SwingScreenState extends ConsumerState<SwingScreen> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.blue, AppColors.lightBlue],
+          colors: [AppColors.silverLakeBlue, AppColors.skyBlue],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -132,7 +132,7 @@ class _SwingScreenState extends ConsumerState<SwingScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.white, width: 2),
-                        borderRadius: BorderRadius.circular(240),
+                        borderRadius: BorderRadius.circular(360),
                       ),
                       height: windowWidth * 0.8,
                       width: windowWidth * 0.8,
