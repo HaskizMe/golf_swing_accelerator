@@ -21,6 +21,7 @@ class _SwingGraphState extends State<SwingGraph> {
         padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
         child: LineChart(
           LineChartData(
+            backgroundColor: AppColors.platinum,
             lineBarsData: [
               LineChartBarData(
                 //curveSmoothness: .8,
@@ -53,7 +54,7 @@ class _SwingGraphState extends State<SwingGraph> {
               ),
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(
-                  reservedSize: 50,
+                  reservedSize: 60,
                   showTitles: true,
                   interval: 10, // Set the interval for x-axis labels
                   getTitlesWidget: (value, meta) {

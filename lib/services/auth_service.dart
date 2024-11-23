@@ -5,15 +5,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/services/firestore_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:crypto/crypto.dart';
 
+import '../models/account.dart';
+import '../providers/swings.dart';
+
 
 
 class AuthService {
-  final _auth = FirebaseAuth.instance;
   final firestore = FirestoreService();
 
 
@@ -21,7 +24,8 @@ class AuthService {
 
     try {
 
-      await _auth.createUserWithEmailAndPassword(
+      print("Creating new account");
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: email,
           password: password
       );
@@ -50,12 +54,21 @@ class AuthService {
 
   Future<String?> signin({required String email, required String password, required BuildContext context}) async {
 
+    print("here");
     try {
 
-      await _auth.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password
       );
+
+      if(FirebaseAuth.instance.currentUser == null){
+        print("User not logged in");
+      }
+
+      print(FirebaseAuth.instance.currentUser?.email);
+      // Explicitly reload the current user to ensure it's up-to-date
+      //await FirebaseAuth.instance.currentUser?.reload();
       await firestore.initializeUserInFirestore(); // Store data in firestore
       await Future.delayed(const Duration(seconds: 1));
 
@@ -85,7 +98,7 @@ class AuthService {
 
       final credential = GoogleAuthProvider.credential(idToken: googleAuth?.idToken, accessToken: googleAuth?.accessToken);
 
-      UserCredential? userCredential = await _auth.signInWithCredential(credential);
+      UserCredential? userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
 
       await firestore.initializeUserInFirestore(); // Store data in firestore
 
@@ -106,7 +119,7 @@ class AuthService {
       final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
       // Once signed in, return the UserCredential
-      UserCredential? userCredential = await _auth.signInWithCredential(facebookAuthCredential);
+      UserCredential? userCredential = await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
 
       await firestore.initializeUserInFirestore(); // Store data in firestore
 
@@ -213,7 +226,7 @@ class AuthService {
 
   /// Updates specific fields in the user's Firestore document.
   Future<void> updateUserProperties(Map<String, dynamic> updatedFields) async {
-    User? currentUser = _auth.currentUser;
+    User? currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser != null) {
       final userDoc = FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
@@ -231,7 +244,7 @@ class AuthService {
 
   /// Reads all user information from Firestore.
   Future<Map<String, dynamic>?> getUserInfo() async {
-    User? currentUser = _auth.currentUser;
+    User? currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser != null) {
       final userDoc = FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
@@ -257,7 +270,7 @@ class AuthService {
 
   /// Reads all user information and associated swings from Firestore.
   Future<Map<String, dynamic>?> getUserInfoWithSwings() async {
-    User? currentUser = _auth.currentUser;
+    User? currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser != null) {
       final userDoc = FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
@@ -326,7 +339,7 @@ class AuthService {
 
       if (!docSnapshot.exists) {
         // User does not exist in Firestore, sign them out
-        await _auth.signOut();
+        await FirebaseAuth.instance.signOut();
         print("User not found in Firestore. Signed out.");
         return false;
       }
@@ -335,14 +348,24 @@ class AuthService {
     return false;
   }
 
-  Future<void> signout() async {
+  Future<void> signout(WidgetRef ref) async {
+    try {
+      // Stop any active Firestore listeners
+      await ref.read(accountProvider).cancelListeners();
+      ref.invalidate(accountProvider); // Invalidate account listener
+      ref.invalidate(swingsNotifierProvider); // Invalidate swings listener
 
-    await _auth.signOut();
-    await Future.delayed(const Duration(seconds: 1));
+      // Sign out the user
+      await FirebaseAuth.instance.signOut();
+      print("User signed out successfully.");
+    } catch (e) {
+      print("Error during sign out: $e");
+    }
   }
 
   void setupLoginListener() {
-    _auth.userChanges().listen((User? user) {
+    print("here1");
+    FirebaseAuth.instance.userChanges().listen((User? user) {
       if (user == null) {
         print('User is currently signed out!');
       } else {

@@ -13,7 +13,7 @@ class CustomStatsRow extends StatelessWidget {
       height: 40,
       //width: 300,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.forestGreen,
         borderRadius: BorderRadius.circular(10)
       ),
       child: Padding(
@@ -21,12 +21,12 @@ class CustomStatsRow extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: TextStyle(color: AppColors.silverLakeBlue, fontWeight: FontWeight.bold, fontSize: 16),),
+            Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
             Container(
               width: 150,
               height: 40,
               decoration: BoxDecoration(
-                  color: AppColors.silverLakeBlue,
+                  color: AppColors.emerald.withOpacity(.9),
                   borderRadius: BorderRadius.circular(10),
               ),
               child: Center(child: Text(result, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),)),
