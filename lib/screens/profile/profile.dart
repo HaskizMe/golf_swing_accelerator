@@ -24,18 +24,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: AppColors.silverLakeBlue,
-        iconTheme: const IconThemeData(
-          color: Colors.white, // Set the back button color to white
-        ),
-        title: const Text("Profile", style: TextStyle(color: Colors.white)),
-        centerTitle: true,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-        ),
+        backgroundColor: AppColors.forestGreen,
       ),
       body: Column(
         //crossAxisAlignment: CrossAxisAlignment.center,
@@ -49,14 +38,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 width: double.infinity,
                 height: 100, // Height of the background
                 decoration: const BoxDecoration(
-                  color: AppColors.silverLakeBlue, // Background color
+                  color: AppColors.forestGreen, // Background color
                 ),
               ),
               // Profile picture
               Positioned(
                 bottom: -40, // Overlap the profile picture
                 left: MediaQuery.of(context).size.width / 2 - 50, // Center the picture
-                child: const ProfilePicture(),
+                child: const ProfilePicture(size: 100,),
               ),
             ],
           ),

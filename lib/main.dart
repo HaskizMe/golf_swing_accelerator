@@ -74,6 +74,8 @@ class _MyAppState extends ConsumerState<MyApp> {
     // or is already signed in.
     _authSubscription = FirebaseAuth.instance.userChanges().listen((User? user) async {
       if (user == null) {
+        print("here4");
+
         // Navigate to the login screen if the user is signed out
         navigatorKey.currentState?.pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -92,11 +94,19 @@ class _MyAppState extends ConsumerState<MyApp> {
           }
           // Navigate to the Home screen if the user is signed in and their onboading is complete
           navigatorKey.currentState?.pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(builder: (context) => const HomeNavigationWrapper()),
                 (route) => false,
           );
         } else if(await _authService.validateUserInFirestore()) {
           // Navigate to the welcome screen if the user is signed in
+          Map<String, dynamic>? accountInfo = await _authService.getUserInfoWithSwings();
+          if (accountInfo != null) {
+            await ref.read(accountProvider.notifier).initializeAccountAndSwings(accountInfo);
+            print("Account and swings initialized successfully.");
+          } else {
+            print("Failed to fetch user data.");
+          }
+
           navigatorKey.currentState?.pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const WelcomeScreen()),
                 (route) => false,
@@ -115,7 +125,6 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
       navigatorKey: navigatorKey, // Attach the navigator key

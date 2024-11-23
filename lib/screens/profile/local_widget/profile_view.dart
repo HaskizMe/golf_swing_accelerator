@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/account.dart';
 import 'package:golf_accelerator_app/screens/profile/local_widget/profile_attribute.dart';
 
+import '../../../services/auth_service.dart';
+
 class ProfileView extends ConsumerStatefulWidget {
   final VoidCallback onTap;
   const ProfileView({super.key, required this.onTap});
@@ -12,6 +14,8 @@ class ProfileView extends ConsumerStatefulWidget {
 }
 
 class _ProfileViewState extends ConsumerState<ProfileView> {
+  final _auth = AuthService();
+
   @override
   Widget build(BuildContext context) {
     final account = ref.watch(accountProvider);
@@ -37,7 +41,17 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
         ProfileAttribute(title: "Primary Hand", data: "${account.primaryHand}"),
         const SizedBox(height: 10,),
         ProfileAttribute(title: "Skill Level", data: "${account.skillLevel}"),
-        const SizedBox(height: 20),
+        //const SizedBox(height: 20),
+        ListTile(
+          onTap: () async {
+            await _auth.signout(ref);
+          },
+          leading: const Text(
+            "Logout", style: TextStyle(fontSize: 16,
+            color: Colors.red,),),
+          trailing: const Icon(Icons.logout, color: Colors.red,),
+        ),
+        SizedBox(height: 30,),
         // Delete Account Button
         ElevatedButton(
           onPressed: () {

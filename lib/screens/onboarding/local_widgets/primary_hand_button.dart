@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../theme/app_colors.dart';
+
 class CustomPrimaryHandButton extends StatelessWidget {
   final Widget image;
   final String title;
@@ -33,7 +35,7 @@ class CustomPrimaryHandButton extends StatelessWidget {
             children: [
               isSelected
                   ? ColorFiltered(
-                colorFilter: const ColorFilter.mode(Colors.blue, BlendMode.srcIn),
+                colorFilter: const ColorFilter.mode(AppColors.forestGreen, BlendMode.srcIn),
                 child: image,
               )
                   : image,
@@ -41,7 +43,7 @@ class CustomPrimaryHandButton extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  color: isSelected ? Colors.blue : Colors.white,
+                  color: isSelected ? AppColors.forestGreen : Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),

@@ -4,15 +4,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:golf_accelerator_app/models/swing_data.dart';
 
 class FirestoreService {
-  final _currentUser = FirebaseAuth.instance.currentUser;
-
   /// Initializes the user's Firestore document if it doesn't already exist.
   Future<void> initializeUserInFirestore() async {
     // Get the currently signed-in user
     //User? currentUser = FirebaseAuth.instance.currentUser;
-
-    if (_currentUser != null) {
-      final userDoc = FirebaseFirestore.instance.collection('users').doc(_currentUser.uid);
+    print("in firestore ${FirebaseAuth.instance.currentUser?.email}");
+    if (FirebaseAuth.instance.currentUser != null) {
+      final userDoc = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid);
 
       // Check if the user document exists
       final docSnapshot = await userDoc.get();
@@ -21,8 +19,8 @@ class FirestoreService {
         // Create a new document with initial fields
         await userDoc.set({
           'onboardingComplete': false,
-          'displayName': _currentUser.displayName,
-          'email': _currentUser.email,
+          'displayName': FirebaseAuth.instance.currentUser!.displayName,
+          'email': FirebaseAuth.instance.currentUser!.email,
           'skillLevel': null,
           'primaryHand': null,
           'heightCm': null,
@@ -39,9 +37,9 @@ class FirestoreService {
   }
 
   Future<void> addSwing(SwingData swing) async {
-    if(_currentUser != null){
+    if(FirebaseAuth.instance.currentUser != null){
       final swingsCollection = FirebaseFirestore.instance
-          .collection('users').doc(_currentUser.uid)
+          .collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
           .collection('swings');
 
       await swingsCollection.add(swing.toJson());
@@ -50,10 +48,10 @@ class FirestoreService {
 
   Future<void> deleteSwing(String docId) async {
     print("doc id: $docId");
-    if (_currentUser != null) {
+    if (FirebaseAuth.instance.currentUser != null) {
       final swingsCollection = FirebaseFirestore.instance
           .collection('users')
-          .doc(_currentUser.uid)
+          .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection('swings');
 
       await swingsCollection.doc(docId).delete();

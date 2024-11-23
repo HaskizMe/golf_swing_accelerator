@@ -184,14 +184,14 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                     borderSide: const BorderSide(
-                      color: Colors.blue, // Enabled border color
+                      color: AppColors.forestGreen, // Enabled border color
                       width: 1.5,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                     borderSide: const BorderSide(
-                      color: AppColors.silverLakeBlue, // Focused border color
+                      color: AppColors.forestGreen, // Focused border color
                       width: 2.0,
                     ),
                   ),
@@ -218,7 +218,7 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
                     builder: (context, constraints) => ToggleButtons(
                       color: Colors.black,
                       selectedColor: Colors.white,
-                      fillColor: AppColors.silverLakeBlue,
+                      fillColor: AppColors.forestGreen,
                       constraints: BoxConstraints.expand(width: constraints.maxWidth/2 - 20),
                       isSelected: [_selectedHand == "Left", _selectedHand == "Right"],
                       onPressed: (index) {

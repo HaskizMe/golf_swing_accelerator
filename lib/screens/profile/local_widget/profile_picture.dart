@@ -4,13 +4,14 @@ import 'package:flutter_svg/svg.dart';
 import '../../../theme/app_colors.dart';
 
 class ProfilePicture extends StatelessWidget {
-  const ProfilePicture({super.key});
+  final double size;
+  const ProfilePicture({super.key, required this.size});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100, // Adjust the size of the circle
-      height: 100,
+      width: size, // Adjust the size of the circle
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle, // Makes the container circular
         border: Border.all(
@@ -23,7 +24,7 @@ class ProfilePicture extends StatelessWidget {
           // Background color
           Container(
             decoration: const BoxDecoration(
-              color: AppColors.silverLakeBlue, // Background color
+              color: AppColors.forestGreen, // Background color
               shape: BoxShape.circle, // Keep the background circular
             ),
           ),

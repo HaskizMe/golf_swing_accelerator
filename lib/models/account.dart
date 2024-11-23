@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +19,8 @@ class Account extends _$Account {
   String? _displayName;
   late String _email;
   bool _isCalibrated = false;
+  StreamSubscription? _swingsSubscription;
+  StreamSubscription? _accountSubscription;
 
 
   @override
@@ -95,7 +99,7 @@ class Account extends _$Account {
       setSkillLevel(updatedData['skillLevel'] as String);
     }
     if (updatedData.containsKey('displayName')) {
-      setDisplayName(updatedData['displayName'] as String);
+      setDisplayName(updatedData['displayName'] ?? "");
     }
     if (updatedData.containsKey('onboardingComplete')) {
       setCalibrated(updatedData['onboardingComplete'] as bool);
@@ -141,7 +145,7 @@ class Account extends _$Account {
     User? user = FirebaseAuth.instance.currentUser;
     final swingsNotifier = ref.read(swingsNotifierProvider.notifier);
 
-    FirebaseFirestore.instance
+    _swingsSubscription = FirebaseFirestore.instance
         .collection('users')
         .doc(user?.uid)
         .collection('swings')
@@ -149,6 +153,8 @@ class Account extends _$Account {
         .listen((snapshot) {
 
       for (var change in snapshot.docChanges) {
+        print("here3");
+
         print("Changed: ${change.type.toString()}");
         //print("Change ${change.doc.data()!}");
 
@@ -191,12 +197,13 @@ class Account extends _$Account {
 
     final accountNotifier = ref.read(accountProvider.notifier);
 
-    FirebaseFirestore.instance
+    _accountSubscription = FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid) // Target only the logged-in user's document
         .snapshots() // Listen to changes in the user's document
         .listen((snapshot) {
       if (!snapshot.exists) {
+        print("here2");
         print("User document does not exist");
         // Handle account deletion
         //accountNotifier.removeAccount(user.uid);
@@ -211,5 +218,16 @@ class Account extends _$Account {
         accountNotifier.updateAccount(accountData);
       }
     });
+  }
+
+  /// Cancel listeners
+  Future<void> cancelListeners() async {
+    await _swingsSubscription?.cancel();
+    _swingsSubscription = null;
+
+    await _accountSubscription?.cancel();
+    _accountSubscription = null;
+
+    print("Listeners canceled");
   }
 }
