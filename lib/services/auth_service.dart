@@ -54,7 +54,6 @@ class AuthService {
 
   Future<String?> signin({required String email, required String password, required BuildContext context}) async {
 
-    print("here");
     try {
 
       await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -364,7 +363,6 @@ class AuthService {
   }
 
   void setupLoginListener() {
-    print("here1");
     FirebaseAuth.instance.userChanges().listen((User? user) {
       if (user == null) {
         print('User is currently signed out!');

@@ -18,11 +18,11 @@ class CustomDebugButton extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.all(0),
             foregroundColor: Colors.white,
-            backgroundColor: color ?? AppColors.moonstone,
+            backgroundColor: color ?? AppColors.forestGreen,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
-            side: const BorderSide(color: Colors.white, width: 2), // Set your desired border color here
+            side: const BorderSide(color: Colors.black, width: 2), // Set your desired border color here
           ),
           child: Text(title, style: TextStyle(fontSize: 12),)
       ),

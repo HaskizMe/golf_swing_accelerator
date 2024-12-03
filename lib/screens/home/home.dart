@@ -319,34 +319,61 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         leading: Padding(
           padding: const EdgeInsets.only(left: 10),
-          child: SingleChildScrollView(
+          child: Container(
+            //color: Colors.red,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Welcome",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    overflow: TextOverflow.ellipsis, // Handles overflow gracefully
-                  ),
-                ),
-                Text(
-                  "Back, $firstName!",
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    overflow: TextOverflow.ellipsis, // Handles overflow gracefully
-                  ),
-                ),
+
+                /// If there is no display name just show Welcome Back!
+                if (firstName.isEmpty)
+                  const Text(
+                    "Welcome Back!",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      overflow: TextOverflow.ellipsis, // Handles overflow gracefully
+                    ),
+                  )
+
+                /// If there is a display name then we say welcome back with their name
+                else
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Welcome",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis, // Handles overflow gracefully
+                        ),
+                      ),
+                      Text(
+                        "Back, $firstName!",
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis, // Handles overflow gracefully
+                        ),
+                      ),
+                    ],
+                  )
               ],
             ),
           ),
         ),
-        actions: const [
-          ProfilePicture(size: 60),
-          SizedBox(width: 10),
+        actions: [
+          GestureDetector(
+            onTap: () {
+              /// This allows me to switch tabs in the bottom navigation
+              BottomNavigationBar navigationBar =  bottomNavigatorKey.currentWidget as BottomNavigationBar;
+              navigationBar.onTap!(4);
+            }, child: ProfilePicture(size: 60)
+          ),
+          const SizedBox(width: 10),
         ],
         flexibleSpace: LayoutBuilder(
           builder: (context, constraints) {
@@ -385,11 +412,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: CustomButton(title: "Scan For Device", onTap: () {}),
+                    child: CustomButton(title: "Scan For Device", onTap: () {
+                      /// This allows me to switch tabs in the bottom navigation
+                      BottomNavigationBar navigationBar =  bottomNavigatorKey.currentWidget as BottomNavigationBar;
+                      navigationBar.onTap!(2);
+                    }),
                   ),
                   const SizedBox(width: 20),
                   Expanded(
-                    child: CustomButton(title: "Start Swinging", onTap: () {}),
+                    child: CustomButton(title: "Start Swinging", onTap: () {
+                      /// This allows me to switch tabs in the bottom navigation
+                      BottomNavigationBar navigationBar =  bottomNavigatorKey.currentWidget as BottomNavigationBar;
+                      navigationBar.onTap!(1);
+                    }),
                   ),
                 ],
               ),
@@ -404,7 +439,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      /// This allows me to switch tabs in the bottom navigation
+                      BottomNavigationBar navigationBar =  bottomNavigatorKey.currentWidget as BottomNavigationBar;
+                      navigationBar.onTap!(3);
+                    },
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.forestGreen, // Font color
                       overlayColor: AppColors.forestGreen, // Overlay color
@@ -447,11 +486,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const Center(
                   child: Column(
                     children: [
-                      Text("NO SWINGS YET"),
+                      Text("NO SWINGS YET", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                     ],
                   ),
                 ),
               const SizedBox(height: 40),
+
+              // ElevatedButton(onPressed: () {
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //       builder: (context) => DebugScreen(deviceName: "Test",),
+              //     ),
+              //   );
+              // }, child: Text("test"))
             ],
           ),
         ),
@@ -460,6 +508,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
+
+var bottomNavigatorKey = GlobalKey<State<BottomNavigationBar>>();
 
 
 
@@ -481,19 +531,18 @@ class _HomeNavigationWrapperState extends State<HomeNavigationWrapper> {
     const ProfileScreen(),
   ];
 
-  final List<String> _titles = [
-    "Home",
-    "Swing",
-    "Scan",
-    "Results",
-    "Account",
-  ];
+  void switchTab(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_currentIndex], // Display the current screen
       bottomNavigationBar: BottomNavigationBar(
+        key: bottomNavigatorKey,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {

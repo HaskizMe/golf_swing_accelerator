@@ -12,9 +12,6 @@ class SwingsNotifier extends _$SwingsNotifier {
 
   // Add Swing
   void addSwing(SwingData swing) {
-    print("added swing");
-
-    print(swing.swingId);
     // Concatenate the new event to the current state
     state = [...state, swing];
 

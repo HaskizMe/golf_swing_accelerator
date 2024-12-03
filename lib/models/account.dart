@@ -105,7 +105,7 @@ class Account extends _$Account {
       setCalibrated(updatedData['onboardingComplete'] as bool);
     }
 
-    print("Account updated with new data: $updatedData");
+    //print("Account updated with new data: $updatedData");
     state = this; // Notify listeners of state change
   }
 
@@ -153,14 +153,13 @@ class Account extends _$Account {
         .listen((snapshot) {
 
       for (var change in snapshot.docChanges) {
-        print("here3");
 
-        print("Changed: ${change.type.toString()}");
+        //print("Changed: ${change.type.toString()}");
         //print("Change ${change.doc.data()!}");
 
         if (change.type == DocumentChangeType.added) {
           // Add new swing
-          print("SWING ADDED");
+          //print("SWING ADDED");
 
           // Pass the document ID explicitly to SwingData
           swingsNotifier.addSwing(
@@ -203,7 +202,6 @@ class Account extends _$Account {
         .snapshots() // Listen to changes in the user's document
         .listen((snapshot) {
       if (!snapshot.exists) {
-        print("here2");
         print("User document does not exist");
         // Handle account deletion
         //accountNotifier.removeAccount(user.uid);

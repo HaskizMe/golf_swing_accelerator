@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/bluetooth.dart';
+import 'package:golf_accelerator_app/screens/debug/debug.dart';
 import 'package:golf_accelerator_app/screens/scan/local_widgets/device_card.dart';
 import '../../theme/app_colors.dart';
 
@@ -17,6 +18,7 @@ class ScanScreen extends ConsumerStatefulWidget {
 class _ScanScreenState extends ConsumerState<ScanScreen> {
   List<ScanResult> _scanResults = [];
   List<BluetoothDevice> _connectedDevices = [];
+  final _ble = BluetoothModel();
   //final Bluetooth _ble = Bluetooth();
 
   Map<String, String> connectionStatuses = {}; // Tracks each device's connection status
@@ -107,7 +109,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     });
 
     //bool connected = await _ble.connectDevice(device);
-    bool connected = await ref.read(bluetoothProvider.notifier).connectDevice(device);
+    bool connected = await _ble.connectDevice(device, ref);
 
     setState(() {
       if (connected) {
@@ -139,8 +141,37 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(
-          color: Colors.white,
+          color: Colors.black,
         ),
+        actions: [
+          if(_connectedDevices.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DebugScreen(deviceName: _connectedDevices.first.advName,),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.forestGreen,
+                      foregroundColor: Colors.white
+                    ),
+                    child: const Text("Device Settings")
+                )
+            )
+            // IconButton(onPressed: () {
+            //   Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => const DebugScreen(),
+            //     ),
+            //   );
+            // }, icon: Icon(Icons.bug_report))
+        ],
       ),
       body: Center(
         child: Column(
@@ -152,7 +183,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                 children: [
                   Text(
                     "Scanning for Golf Device",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    style: TextStyle(color: Colors.black, fontSize: 20),
                   ),
                   SizedBox(height: 20),
                   CircularProgressIndicator(
@@ -193,7 +224,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                           padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                           child: Text(
                             "Connected Devices",
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                           ),
                         ),
                         ..._connectedDevices.map((device) {
@@ -211,7 +242,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                         padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                         child: Text(
                           "Available Devices",
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                         ),
                       ),
                       ..._scanResults.map((result) {

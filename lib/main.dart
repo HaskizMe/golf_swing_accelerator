@@ -85,7 +85,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         bool isOnboardingComplete = await _authService.checkOnboardingStatus();
         if(isOnboardingComplete){
           Map<String, dynamic>? accountInfo = await _authService.getUserInfoWithSwings();
-          print(accountInfo);
+          //print(accountInfo);
           if (accountInfo != null) {
             await ref.read(accountProvider.notifier).initializeAccountAndSwings(accountInfo);
             print("Account and swings initialized successfully.");
