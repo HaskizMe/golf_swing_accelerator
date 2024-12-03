@@ -11,4 +11,5 @@ class AppColors {
   static const Color teaGreen = Color(0xFFD0FBDA);
   static const Color platinum = Color(0xFFE8E4E4);
   static const Color emerald = Color(0xFF5DD57B);
+  static const Color darkPastelGreen = Color(0xFF2DB44F);
 }

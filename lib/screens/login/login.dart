@@ -88,8 +88,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => isLoading = true);
 
     String? response = await _auth.signin(
-      email: _email.text,
-      password: _password.text,
+      email: _email.text.trim(),
+      password: _password.text.trim(),
       context: context,
     );
 
@@ -146,7 +146,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       height: 50,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(colors: [AppColors.silverLakeBlue, AppColors.skyBlue]),
+                        gradient: const LinearGradient(colors: [AppColors.forestGreen, AppColors.emerald]),
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: ElevatedButton(
@@ -250,14 +250,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             });
                           },
                           style: TextButton.styleFrom(
-                            overlayColor: Colors.blue.withOpacity(0.1),
+                            overlayColor: AppColors.forestGreen.withOpacity(0.1),
                           ),
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 300),
                             child: Text(
                               isSignUpMode ? "Login Here" : "Sign Up",
                               key: ValueKey(isSignUpMode),
-                              style: TextStyle(color: Colors.blue),
+                              style: const TextStyle(color: AppColors.darkPastelGreen),
                             ),
                           ),
                         )

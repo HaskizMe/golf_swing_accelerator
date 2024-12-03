@@ -15,6 +15,8 @@ class SwingScreen extends ConsumerStatefulWidget {
 }
 
 class _SwingScreenState extends ConsumerState<SwingScreen> {
+  final _ble = BluetoothModel();
+
   @override
   initState() {
     super.initState();
@@ -23,14 +25,16 @@ class _SwingScreenState extends ConsumerState<SwingScreen> {
 
   @override
   dispose() {
+    print("Page Disposed");
+    _ble.cancelNotificationsSubscription();
     super.dispose();
   }
 
   void _initialize() {
     print("Init");
-    BluetoothDevice? device = ref.read(bluetoothProvider).myConnectedDevice;
+    BluetoothDevice? device = _ble.myConnectedDevice;
     if (device != null) {
-      ref.read(bluetoothProvider.notifier).setupListeners(device);
+      _ble.setupListeners(device, ref);
     } else {
       print("Null");
     }
@@ -57,7 +61,6 @@ class _SwingScreenState extends ConsumerState<SwingScreen> {
 
                 ElevatedButton(
                   onPressed: () {
-                    ref.read(bluetoothProvider.notifier).cancelNotificationsSubscription();
                     Navigator.push(
                       context,
                       MaterialPageRoute(

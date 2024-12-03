@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:golf_accelerator_app/models/bluetooth.dart';
 import 'package:golf_accelerator_app/models/swing_data.dart';
 import 'package:golf_accelerator_app/screens/swing_result/local_widgets/stats_row.dart';
 import 'package:golf_accelerator_app/screens/swing_result/local_widgets/swing_graph.dart';
@@ -8,17 +11,18 @@ import 'package:golf_accelerator_app/widgets/flat_button.dart';
 import '../../theme/app_colors.dart';
 import '../home/home.dart';
 
-class SwingResultScreen extends StatefulWidget {
+class SwingResultScreen extends ConsumerStatefulWidget {
   final bool quickView;
   final SwingData swing;
 
   const SwingResultScreen({super.key, required this.quickView, required this.swing});
 
   @override
-  State<SwingResultScreen> createState() => _SwingResultScreenState();
+  ConsumerState<SwingResultScreen> createState() => _SwingResultScreenState();
 }
 
-class _SwingResultScreenState extends State<SwingResultScreen> {
+class _SwingResultScreenState extends ConsumerState<SwingResultScreen> {
+  final _ble = BluetoothModel();
   int _remainingTime = 5; // Time remaining for the timer
   Timer? _timer;
 

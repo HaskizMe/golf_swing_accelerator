@@ -7,6 +7,7 @@ import 'package:golf_accelerator_app/screens/swing_result/swing_result.dart';
 import 'package:golf_accelerator_app/services/firestore_service.dart';
 import 'package:intl/intl.dart';
 import '../../theme/app_colors.dart';
+import '../home/home.dart';
 
 class ResultsScreen extends ConsumerStatefulWidget {
   const ResultsScreen({super.key});
@@ -48,10 +49,27 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: swings.isEmpty
-            ? const Center(
-          child: Text(
-            "No swing data available.",
-            style: TextStyle(color: AppColors.forestGreen, fontSize: 20),
+            ? Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "No swing data available.",
+                style: TextStyle(color: AppColors.forestGreen, fontSize: 20),
+              ),
+              const SizedBox(height: 10,),
+              ElevatedButton(
+                  onPressed: () {
+                    /// This allows me to switch tabs in the bottom navigation
+                    BottomNavigationBar navigationBar =  bottomNavigatorKey.currentWidget as BottomNavigationBar;
+                    navigationBar.onTap!(1);
+                    },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.forestGreen,
+                    foregroundColor: Colors.white
+                  ),
+                  child: const Text("Practice Swinging Club"))
+            ],
           ),
         )
             : ListView.builder(
