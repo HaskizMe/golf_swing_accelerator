@@ -74,7 +74,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     // or is already signed in.
     _authSubscription = FirebaseAuth.instance.userChanges().listen((User? user) async {
       if (user == null) {
-        print("here4");
+        //print("here4");
 
         // Navigate to the login screen if the user is signed out
         navigatorKey.currentState?.pushAndRemoveUntil(
@@ -82,8 +82,10 @@ class _MyAppState extends ConsumerState<MyApp> {
               (route) => false,
         );
       } else {
+        print("user not null");
         bool isOnboardingComplete = await _authService.checkOnboardingStatus();
         if(isOnboardingComplete){
+          print("user onboarding not complete");
           Map<String, dynamic>? accountInfo = await _authService.getUserInfoWithSwings();
           //print(accountInfo);
           if (accountInfo != null) {
