@@ -17,8 +17,18 @@ import '../providers/swings.dart';
 
 
 class AuthService {
-  final firestore = FirestoreService();
+  // Static instance field
+  static final AuthService _instance = AuthService._internal();
 
+  // Private constructor
+  AuthService._internal();
+
+  // Factory constructor to return the singleton instance
+  factory AuthService() {
+    return _instance;
+  }
+
+  final firestore = FirestoreService();
 
   Future<String?> signup({required String email, required String password, required BuildContext context}) async {
 

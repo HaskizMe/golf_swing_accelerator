@@ -29,7 +29,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
               backgroundColor: Colors.black,
               foregroundColor: Colors.white
           ),
-          child: Text("Edit Profile"),
+          child: const Text("Edit Profile"),
         ),
         const SizedBox(height: 20),
         Text("${account.displayName}", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,),),
@@ -63,7 +63,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                 solution: "Are you sure you want to delete your account? Your information will be deleted forever.",
                 onTap: () {
                   final db = FirestoreService();
-                  db.deleteAccount(context);
+                  db.deleteAccount(context, ref);
                 });
             // Delete account action
           },

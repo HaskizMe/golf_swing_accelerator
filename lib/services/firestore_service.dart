@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/swing_data.dart';
+import 'package:golf_accelerator_app/services/auth_service.dart';
 
 class FirestoreService {
   /// Initializes the user's Firestore document if it doesn't already exist.
@@ -98,7 +100,8 @@ class FirestoreService {
     }
   }
 
-  Future<void> deleteAccount(BuildContext context) async {
+  Future<void> deleteAccount(BuildContext context, WidgetRef ref) async {
+    final _auth = AuthService();
     try {
       User? user = FirebaseAuth.instance.currentUser;
 
@@ -115,10 +118,12 @@ class FirestoreService {
       await deleteUserWithSubcollections(userId);
 
       // Delete the user from Firebase Authentication
+      print("Deleting user auth");
       await user.delete();
 
+      _auth.signout(ref);
       // Sign out the user
-      await FirebaseAuth.instance.signOut();
+      //await FirebaseAuth.instance.signOut();
 
       // Notify the user
       ScaffoldMessenger.of(context).showSnackBar(
@@ -144,6 +149,7 @@ class FirestoreService {
   }
 
   Future<void> deleteUserWithSubcollections(String userId) async {
+    print("deleting user with subcollections");
     final firestore = FirebaseFirestore.instance;
 
     // Reference to the user's document
@@ -158,6 +164,8 @@ class FirestoreService {
   }
 
   Future<void> deleteSubcollection(CollectionReference subcollection) async {
+    print("deleting subcollections");
+
     QuerySnapshot snapshot = await subcollection.get();
 
     for (DocumentSnapshot doc in snapshot.docs) {

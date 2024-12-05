@@ -64,7 +64,7 @@ class _SwingResultScreenState extends ConsumerState<SwingResultScreen> {
         ),
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(
-          color: Colors.white,
+          color: Colors.black,
         ),
       ),
       body: Stack(
@@ -155,12 +155,12 @@ class _SwingResultScreenState extends ConsumerState<SwingResultScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.transparent,
-                  border: Border.all(color: Colors.white, width: 2),
+                  border: Border.all(color: Colors.black, width: 2),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   '$_remainingTime',
-                  style: const TextStyle(color: Colors.white, fontSize: 18),
+                  style: const TextStyle(color: Colors.black, fontSize: 18),
                 ),
               ),
             ),

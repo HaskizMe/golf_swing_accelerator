@@ -37,7 +37,7 @@ class BluetoothModel {
   }
 
   // Methods
-  Future<bool> connectDevice(BluetoothDevice device, WidgetRef ref) async {
+  Future<bool> connectDevice(BluetoothDevice device, DeviceCollectingStatus notifier) async {
     bool success = false;
     try {
       await device.connect();
@@ -47,7 +47,7 @@ class BluetoothModel {
         if (state == BluetoothConnectionState.disconnected) {
           print("Device Disconnected");
           print("Error disconnection description: ${device.disconnectReason}");
-          ref.read(deviceCollectingStatusProvider.notifier).stopReceivingData(); // Use ref passed in as parameter
+          notifier.stopReceivingData();
           myConnectedDevice = null;
         } else if (state == BluetoothConnectionState.connected) {
           success = true;

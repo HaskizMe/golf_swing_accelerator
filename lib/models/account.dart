@@ -89,19 +89,19 @@ class Account extends _$Account {
 
   /// Updates the account with new data
   void updateAccount(Map<String, dynamic> updatedData) {
-    if (updatedData.containsKey('heightCm')) {
+    if (updatedData.containsKey('heightCm') && updatedData['heightCm'] != null) {
       setHeight(updatedData['heightCm'] as double);
     }
-    if (updatedData.containsKey('primaryHand')) {
+    if (updatedData.containsKey('primaryHand') && updatedData['primaryHand'] != null) {
       setPrimaryHand(updatedData['primaryHand'] as String);
     }
-    if (updatedData.containsKey('skillLevel')) {
+    if (updatedData.containsKey('skillLevel') && updatedData['skillLevel'] != null) {
       setSkillLevel(updatedData['skillLevel'] as String);
     }
     if (updatedData.containsKey('displayName')) {
       setDisplayName(updatedData['displayName'] ?? "");
     }
-    if (updatedData.containsKey('onboardingComplete')) {
+    if (updatedData.containsKey('onboardingComplete') && updatedData['onboardingComplete'] != null) {
       setCalibrated(updatedData['onboardingComplete'] as bool);
     }
 
