@@ -156,39 +156,53 @@ class AuthService {
     return digest.toString();
   }
 
+
   Future<UserCredential> signInWithApple() async {
-    // To prevent replay attacks with the credential returned from Apple, we
-    // include a nonce in the credential request. When signing in with
-    // Firebase, the nonce in the id token returned by Apple, is expected to
-    // match the sha256 hash of `rawNonce`.
-    final rawNonce = generateNonce();
-    final nonce = sha256ofString(rawNonce);
+    try {
+      // Generate nonce for security
+      final rawNonce = generateNonce();
+      final nonce = sha256ofString(rawNonce);
 
-    // Request credential for the currently signed in Apple account.
-    final appleCredential = await SignInWithApple.getAppleIDCredential(
-      scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-      webAuthenticationOptions: WebAuthenticationOptions(
-        // Set these values appropriately
-        clientId: 'com.golfaccelerator.golf_accelerator_app',
-        redirectUri: Uri.parse(
-          'https://your-backend-domain/callbacks/sign_in_with_apple',
-        ),
-      ),
-      nonce: nonce,
-    );
+      // Request credential for the Apple account
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: nonce,
+      );
 
-    // Create an `OAuthCredential` from the credential returned by Apple.
-    final oauthCredential = OAuthProvider("apple.com").credential(
-      idToken: appleCredential.identityToken,
-      rawNonce: rawNonce,
-    );
+      final fullName = appleCredential.givenName != null
+          ? '${appleCredential.givenName} ${appleCredential.familyName}'
+          : null;
 
-    // Sign in the user with Firebase. If the nonce we generated earlier does
-    // not match the nonce in `appleCredential.identityToken`, sign in will fail.
-    return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+      final email = appleCredential.email;
+
+      print("Full Name: $fullName");
+      print("Email: $email");
+
+      // Debugging: Check the returned identity token
+      if (appleCredential.identityToken == null) {
+        throw Exception("Identity token is null.");
+      }
+
+      // Create an OAuthCredential from Apple credential
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken!,
+        rawNonce: rawNonce,
+        accessToken: appleCredential.authorizationCode
+      );
+
+      // Sign in to Firebase
+      UserCredential? userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+
+      await firestore.initializeUserInFirestore(); // Store data in firestore
+
+      return userCredential;
+    } catch (e) {
+      print("Error during Apple Sign-In: $e");
+      rethrow;
+    }
   }
 
   // /// Initializes the user's Firestore document if it doesn't already exist.
