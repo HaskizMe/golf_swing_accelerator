@@ -86,6 +86,7 @@ class FirestoreService {
   Future<void> updateAccountFields(Map<String, dynamic> fields) async {
     User? user = FirebaseAuth.instance.currentUser;
 
+
     if (user == null) {
       throw Exception("No user is logged in");
     }
@@ -102,8 +103,8 @@ class FirestoreService {
 
   Future<void> deleteAccount(BuildContext context, WidgetRef ref) async {
     final _auth = AuthService();
+    User? user = FirebaseAuth.instance.currentUser;
     try {
-      User? user = FirebaseAuth.instance.currentUser;
 
       if (user == null) {
         throw FirebaseAuthException(
@@ -117,13 +118,12 @@ class FirestoreService {
       // Delete user's Firestore data (including subcollections)
       await deleteUserWithSubcollections(userId);
 
-      // Delete the user from Firebase Authentication
+      // Try to delete the user
       print("Deleting user auth");
       await user.delete();
 
-      _auth.signout(ref);
       // Sign out the user
-      //await FirebaseAuth.instance.signOut();
+      _auth.signout(ref);
 
       // Notify the user
       ScaffoldMessenger.of(context).showSnackBar(
@@ -131,11 +131,13 @@ class FirestoreService {
       );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
+        // Prompt reauthentication
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Please reauthenticate to delete your account.")),
         );
-
-        // Optionally trigger a reauthentication flow here
+        //User? user = FirebaseAuth.instance.currentUser;
+        // Trigger reauthentication flow
+        await _reauthenticate(context, user!);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error: ${e.message}")),
@@ -146,6 +148,62 @@ class FirestoreService {
         SnackBar(content: Text("Error: $e")),
       );
     }
+  }
+
+  Future<void> _reauthenticate(BuildContext context, User user) async {
+    try {
+      // Ensure the user has an email address (for email/password authentication)
+      final email = user.email;
+      if (email == null) {
+        throw Exception("User email not found. Cannot reauthenticate.");
+      }
+
+      // Prompt the user for their password
+      final password = await _promptForPassword(context);
+
+      // Create the credential
+      AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
+
+      // Reauthenticate the user
+      await user.reauthenticateWithCredential(credential);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Reauthentication successful. Try deleting the account again.")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Reauthentication failed: $e")),
+      );
+    }
+  }
+
+// Helper method to prompt for a password
+  Future<String> _promptForPassword(BuildContext context) async {
+    String password = "";
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Reauthenticate"),
+        content: TextField(
+          obscureText: true,
+          decoration: InputDecoration(labelText: "Enter your password"),
+          onChanged: (value) {
+            password = value;
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text("Submit"),
+          ),
+        ],
+      ),
+    );
+    return password;
   }
 
   Future<void> deleteUserWithSubcollections(String userId) async {

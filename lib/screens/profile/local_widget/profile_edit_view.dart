@@ -31,6 +31,7 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
     super.initState();
 
     // Initialize based on accountProvider
+// Initialize based on accountProvider
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final account = ref.read(accountProvider);
 
@@ -38,7 +39,13 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
         _selectedSkillLevel = account.skillLevel ?? "Beginner";
         _selectedHand = account.primaryHand ?? "Right";
 
-        // Optionally initialize height field
+        // Initialize text controllers if account data exists
+        if (account.displayName != null) {
+          List<String> nameParts = account.displayName!.split(' ');
+          _firstName.text = nameParts.isNotEmpty ? nameParts[0] : '';
+          _lastName.text = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+        }
+
         if (account.heightFt != null && account.heightIn != null) {
           _height.text = "${account.heightFt} ft ${account.heightIn} in";
         }
@@ -60,6 +67,8 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
 
     // Add non-empty fields to the updates map
     if (_firstName.text.isNotEmpty || _lastName.text.isNotEmpty) {
+      print(_firstName.text);
+      print(_lastName.text);
       updates["displayName"] = "${_firstName.text.trim()} ${_lastName.text.trim()}";
     }
     if (totalHeightInCm != null) {
@@ -98,12 +107,12 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
   Widget build(BuildContext context) {
     final account = ref.watch(accountProvider);
     // Assign the display name to the text fields
-    if (account.displayName != null) {
-      List<String> nameParts = account.displayName!.split(' ');
-      // Assign firstName and lastName
-      _firstName.text = nameParts.isNotEmpty ? nameParts[0] : '';
-      _lastName.text = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
-    }
+    // if (account.displayName != null) {
+    //   List<String> nameParts = account.displayName!.split(' ');
+    //   // Assign firstName and lastName
+    //   _firstName.text = nameParts.isNotEmpty ? nameParts[0] : '';
+    //   _lastName.text = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+    // }
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
       child: Column(
