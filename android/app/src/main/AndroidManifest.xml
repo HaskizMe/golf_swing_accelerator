@@ -72,7 +72,7 @@
                 <!-- Define your custom scheme and path -->
                 <data
                     android:scheme="signinwithapple"
-                    android:path="callback" />
+                    android:path="/callback" />
             </intent-filter>
         </activity>
 

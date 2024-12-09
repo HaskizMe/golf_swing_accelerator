@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/swing_data.dart';
 import 'package:golf_accelerator_app/services/auth_service.dart';
-
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
+import 'dart:math';
 class FirestoreService {
   /// Initializes the user's Firestore document if it doesn't already exist.
   Future<void> initializeUserInFirestore() async {
@@ -104,8 +108,8 @@ class FirestoreService {
   Future<void> deleteAccount(BuildContext context, WidgetRef ref) async {
     final _auth = AuthService();
     User? user = FirebaseAuth.instance.currentUser;
-    try {
 
+    try {
       if (user == null) {
         throw FirebaseAuthException(
           code: 'no-user',
@@ -118,30 +122,33 @@ class FirestoreService {
       // Delete user's Firestore data (including subcollections)
       await deleteUserWithSubcollections(userId);
 
-      // Try to delete the user
-      print("Deleting user auth");
-      await user.delete();
+      try {
+        // Attempt to delete the user
+        print("Deleting user auth");
+        await user.delete();
 
-      // Sign out the user
-      _auth.signout(ref);
+        // Sign out the user
+        //_auth.signout(ref);
 
-      // Notify the user
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Account deleted successfully.")),
-      );
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'requires-recent-login') {
-        // Prompt reauthentication
+        // Notify the user
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Please reauthenticate to delete your account.")),
+          const SnackBar(content: Text("Account deleted successfully.")),
         );
-        //User? user = FirebaseAuth.instance.currentUser;
-        // Trigger reauthentication flow
-        await _reauthenticate(context, user!);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error: ${e.message}")),
-        );
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'requires-recent-login') {
+          // Reauthenticate and retry deletion
+          await _reauthenticate(context, user);
+          await user.delete();
+
+          // Sign out the user
+          //_auth.signout(ref);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Account deleted successfully.")),
+          );
+        } else {
+          throw e; // Rethrow other exceptions
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -150,34 +157,87 @@ class FirestoreService {
     }
   }
 
-  Future<void> _reauthenticate(BuildContext context, User user) async {
+  Future<void> _reauthenticate(BuildContext context, User currentUser) async {
+    final auth = AuthService();
     try {
-      // Ensure the user has an email address (for email/password authentication)
-      final email = user.email;
-      if (email == null) {
-        throw Exception("User email not found. Cannot reauthenticate.");
+      for (final provider in currentUser.providerData) {
+        print("Provider ID: ${provider.providerId}");
+
+        if (provider.providerId == 'google.com') {
+          // Reauthenticate with Google
+          final googleUser = await GoogleSignIn().signIn();
+          if (googleUser == null) {
+            throw Exception("Google sign-in was canceled.");
+          }
+
+          final googleAuth = await googleUser.authentication;
+          final credential = GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken,
+            idToken: googleAuth.idToken,
+          );
+
+          await currentUser.reauthenticateWithCredential(credential);
+          print("Reauthenticated with Google.");
+        } else if (provider.providerId == 'apple.com') {
+          // Reauthenticate with Apple
+          final rawNonce = generateNonce(); // Helper function to generate nonce
+          final nonce = auth.sha256ofString(rawNonce);
+
+          final appleCredential = await SignInWithApple.getAppleIDCredential(
+            scopes: [AppleIDAuthorizationScopes.email],
+            nonce: nonce,
+          );
+
+          final credential = OAuthProvider("apple.com").credential(
+            idToken: appleCredential.identityToken,
+            rawNonce: rawNonce,
+          );
+
+          await currentUser.reauthenticateWithCredential(credential);
+          print("Reauthenticated with Apple.");
+        } else if (provider.providerId == 'password') {
+          // Reauthenticate with Email/Password
+          final password = await _promptForPassword(context);
+          final credential = EmailAuthProvider.credential(
+            email: currentUser.email!,
+            password: password,
+          );
+
+          await currentUser.reauthenticateWithCredential(credential);
+          print("Reauthenticated with Email/Password.");
+        } else {
+          print("No reauthentication flow for provider: ${provider.providerId}");
+        }
       }
-
-      // Prompt the user for their password
-      final password = await _promptForPassword(context);
-
-      // Create the credential
-      AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
-
-      // Reauthenticate the user
-      await user.reauthenticateWithCredential(credential);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Reauthentication successful. Try deleting the account again.")),
-      );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Reauthentication failed: $e")),
-      );
+      print("Reauthentication failed: $e");
+      throw Exception("Reauthentication failed.");
     }
   }
 
-// Helper method to prompt for a password
+  // Future<void> _reauthenticate(BuildContext context, User currentUser) async {
+  //   final auth = AuthService();
+  //   for (final provider in currentUser.providerData) {
+  //     print("Provider ID: ${provider.providerId}");
+  //
+  //     if (provider.providerId == 'google.com') {
+  //       print("User signed in with Google.");
+  //       auth.signInWithGoogle();
+  //     } else if (provider.providerId == 'apple.com') {
+  //       auth.signInWithApple();
+  //       print("User signed in with Apple.");
+  //     } else if (provider.providerId == 'password') {
+  //       String email = currentUser.email ?? "";
+  //       String password = await _promptForPassword(context);
+  //       auth.signin(email: email, password: password, context: context);
+  //       print("User signed in with Email/Password.");
+  //     } else {
+  //       print("User signed in with another provider: ${provider.providerId}");
+  //     }
+  //   }
+  // }
+
+  // Helper method to prompt for a password
   Future<String> _promptForPassword(BuildContext context) async {
     String password = "";
     await showDialog(

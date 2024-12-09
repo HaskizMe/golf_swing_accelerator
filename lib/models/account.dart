@@ -7,6 +7,7 @@ import 'package:golf_accelerator_app/models/swing_data.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../providers/swings.dart';
+
 part 'account.g.dart';
 
 @Riverpod(keepAlive: true)
