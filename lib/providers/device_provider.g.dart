@@ -1,26 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'account_provider.dart';
+part of 'device_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$accountNotifierHash() => r'7aa48aa11b92da8cda23ec464d895c84faa7b701';
+String _$golfDeviceNotifierHash() =>
+    r'2598746277009f8e7821eeeb6c13267b56741842';
 
-/// See also [AccountNotifier].
-@ProviderFor(AccountNotifier)
-final accountNotifierProvider =
-    NotifierProvider<AccountNotifier, Account>.internal(
-  AccountNotifier.new,
-  name: r'accountNotifierProvider',
+/// See also [GolfDeviceNotifier].
+@ProviderFor(GolfDeviceNotifier)
+final golfDeviceNotifierProvider =
+    NotifierProvider<GolfDeviceNotifier, GolfDevice>.internal(
+  GolfDeviceNotifier.new,
+  name: r'golfDeviceNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$accountNotifierHash,
+      : _$golfDeviceNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$AccountNotifier = Notifier<Account>;
+typedef _$GolfDeviceNotifier = Notifier<GolfDevice>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

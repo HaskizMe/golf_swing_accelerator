@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/bluetooth.dart';
+import 'package:golf_accelerator_app/providers/bluetooth_provider.dart';
 import 'package:golf_accelerator_app/screens/debug/debug.dart';
 import 'package:golf_accelerator_app/screens/scan/local_widgets/device_card.dart';
 import '../../providers/device_collecting_status.dart';
@@ -19,7 +20,7 @@ class ScanScreen extends ConsumerStatefulWidget {
 class _ScanScreenState extends ConsumerState<ScanScreen> {
   List<ScanResult> _scanResults = [];
   List<BluetoothDevice> _connectedDevices = [];
-  final _ble = BluetoothModel();
+  //final _ble = BluetoothModel();
   //final Bluetooth _ble = Bluetooth();
 
   Map<String, String> connectionStatuses = {}; // Tracks each device's connection status
@@ -111,7 +112,8 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
 
     final notifier = ref.read(deviceCollectingStatusProvider.notifier);
     //bool connected = await _ble.connectDevice(device);
-    bool connected = await _ble.connectDevice(device, notifier);
+    //bool connected = await _ble.connectDevice(device, notifier);
+    bool connected = await ref.read(bluetoothNotifierProvider.notifier).connectDevice(device, notifier);
 
     setState(() {
       if (connected) {

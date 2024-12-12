@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:golf_accelerator_app/models/account.dart';
+import 'package:golf_accelerator_app/providers/account_provider.dart';
 import 'package:golf_accelerator_app/screens/home/home.dart';
 import 'package:golf_accelerator_app/services/auth_service.dart';
+import '../../services/firestore_service.dart';
 import '../../theme/app_colors.dart';
 
 class CalibrateClub extends ConsumerStatefulWidget {
@@ -23,7 +25,8 @@ class _CalibrateClubState extends ConsumerState<CalibrateClub> {
   }
 
   Future<void> _onTapUp(TapUpDetails details) async {
-    final account = ref.read(accountProvider.notifier);
+    //final account = ref.read(accountProvider.notifier);
+    final account = ref.read(accountNotifierProvider.notifier);
 
     setState(() => _isTapped = false);
 
@@ -36,8 +39,7 @@ class _CalibrateClubState extends ConsumerState<CalibrateClub> {
       onBoardingIsComplete = true;
     }
 
-    AuthService auth = AuthService();
-    await auth.updateUserProperties({
+    await FirestoreService.updateUserProperties({
       'skillLevel': skillLevel,
       'primaryHand': primaryHand,
       'onboardingComplete': onBoardingIsComplete,

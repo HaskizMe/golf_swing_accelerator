@@ -20,8 +20,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
 
   void onSlideDismissed(SwingData swing){
     // Handle the deletion
-    final db = FirestoreService();
-    db.deleteSwing(swing.swingId!);
+    FirestoreService.deleteSwing(swing.swingId!);
 
     // Show a snackbar
     ScaffoldMessenger.of(context).showSnackBar(

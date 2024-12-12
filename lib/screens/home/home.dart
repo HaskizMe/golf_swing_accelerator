@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:golf_accelerator_app/models/account.dart';
 import 'package:golf_accelerator_app/models/swing_data.dart';
+import 'package:golf_accelerator_app/providers/account_provider.dart';
+import 'package:golf_accelerator_app/providers/bluetooth_provider.dart';
 import 'package:golf_accelerator_app/providers/swings.dart';
 import 'package:golf_accelerator_app/screens/home/local_widgets/carousel_buttons.dart';
 import 'package:golf_accelerator_app/screens/home/local_widgets/list_tile.dart';
@@ -20,273 +22,10 @@ import '../../models/bluetooth.dart';
 import '../../theme/app_colors.dart';
 import '../debug/debug.dart';
 import '../login/login.dart';
-import '../recalibrate/recalibrate.dart';
 import '../results/results.dart';
 import '../scan/scan.dart';
 import '../swing/swing.dart';
 import '../swing_result/swing_result.dart';
-
-// class HomeScreen extends ConsumerStatefulWidget {
-//   const HomeScreen({super.key});
-//
-//   @override
-//   ConsumerState<HomeScreen> createState() => _HomeScreenState();
-// }
-//
-// class _HomeScreenState extends ConsumerState<HomeScreen> {
-//   final _auth = AuthService();
-//
-//   // Define the carousel screens and associated navigation actions
-//   final Map<String, Widget> carouselScreens = {
-//     'Scan': Transform(
-//       alignment: Alignment.center,
-//       transform: Matrix4.identity()..scale(-1.0, 1.0),
-//       child: SvgPicture.asset("assets/Vector.svg", height: 200),
-//     ),
-//     'Swing': Image.asset('assets/resultsCarousel.png'),
-//     'Recalibrate': Image.asset('assets/swingCarousel.png'),
-//     'Results': Image.asset('assets/resultsCarousel.png'),
-//     'Debug': Image.asset('assets/resultsCarousel.png'),
-//   };
-//
-//   final List<Widget> screenWidgets = [
-//     ScanScreen(),
-//     SwingScreen(),
-//     RecalibrateScreen(),
-//     ResultsScreen(),
-//     DebugScreen(),
-//   ];
-//
-//   late double buttonOffset;
-//   bool _isTapped = false;
-//
-//   final CarouselController _carouselController = CarouselController(initialItem: 0);
-//   int currentIndex = 0;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _carouselController.addListener(_scrollListener); // Listen for scroll updates
-//   }
-//
-//   @override
-//   void dispose() {
-//     _carouselController.removeListener(_scrollListener); // Clean up the listener
-//     super.dispose();
-//   }
-//
-//   void _scrollListener() {
-//     // Calculate the current index based on the offset
-//     int newIndex = (_carouselController.offset / buttonOffset).round();
-//     if (newIndex != currentIndex) {
-//       setState(() {
-//         currentIndex = newIndex % carouselScreens.length; // Keep the index within bounds
-//       });
-//     }
-//   }
-//
-//   void _onTapDown(TapDownDetails details) {
-//     setState(() {
-//       _isTapped = true;
-//     });
-//   }
-//
-//   void _onTapCancel() {
-//     setState(() {
-//       _isTapped = false;
-//     });
-//   }
-//
-//   void _previousItem() {
-//     setState(() {
-//       if (currentIndex > 0) {
-//         currentIndex--;
-//       } else {
-//         currentIndex = carouselScreens.length - 1; // Loop back to the last item
-//       }
-//       _carouselController.animateTo(
-//         buttonOffset * currentIndex,
-//         duration: const Duration(milliseconds: 300),
-//         curve: Curves.easeInOut,
-//       );
-//     });
-//   }
-//
-//   void _nextItem() {
-//     setState(() {
-//       if (currentIndex < carouselScreens.length - 1) {
-//         currentIndex++;
-//       } else {
-//         currentIndex = 0; // Loop back to the first item
-//       }
-//       _carouselController.animateTo(
-//         buttonOffset * currentIndex,
-//         duration: const Duration(milliseconds: 300),
-//         curve: Curves.easeInOut,
-//       );
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     buttonOffset = MediaQuery.of(context).size.width - 60;
-//     return Container(
-//       decoration: const BoxDecoration(
-//         gradient: LinearGradient(
-//           colors: [AppColors.silverLakeBlue, AppColors.skyBlue],
-//           begin: Alignment.topCenter,
-//           end: Alignment.bottomCenter,
-//         ),
-//       ),
-//       child: Stack(
-//         children: [
-//           Scaffold(
-//             backgroundColor: Colors.transparent,
-//             appBar: AppBar(
-//               backgroundColor: Colors.transparent,
-//               iconTheme: const IconThemeData(
-//                 color: Colors.white,
-//               ),
-//               actions: [
-//                 Builder(
-//                   builder: (BuildContext context) {
-//                     return GestureDetector(
-//                       onTapDown: _onTapDown,
-//                       onTap: () {
-//                         setState(() {
-//                           _isTapped = false;
-//                         });
-//                         Scaffold.of(context).openEndDrawer();
-//                       },
-//                       onTapCancel: _onTapCancel,
-//                       child: SvgPicture.asset(
-//                         "assets/drawerIcon.svg",
-//                         colorFilter: _isTapped
-//                             ? ColorFilter.mode(
-//                             Colors.black.withOpacity(0.2), BlendMode.srcIn)
-//                             : null,
-//                       ),
-//                     );
-//                   },
-//                 ),
-//                 const SizedBox(width: 10),
-//               ],
-//             ),
-//
-//             /// Main content of page
-//             body: Center(
-//               child: Padding(
-//                 padding: const EdgeInsets.fromLTRB(30, 0, 30, 50),
-//                 child: Column(
-//                   children: [
-//                     SvgPicture.asset("assets/homeIcon.svg", width: 220),
-//                     const SizedBox(height: 40),
-//
-//                     /// Right and left arrows
-//                     Row(
-//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                       children: [
-//                         ElevatedButton(
-//                           onPressed: _previousItem,
-//                           style: ElevatedButton.styleFrom(
-//                             backgroundColor: AppColors.carolinaBlue,
-//                             overlayColor: Colors.black,
-//                           ),
-//                           child: SvgPicture.asset("assets/Left.svg"),
-//                         ),
-//                         ElevatedButton(
-//                           onPressed: _nextItem,
-//                           style: ElevatedButton.styleFrom(
-//                             backgroundColor: AppColors.carolinaBlue,
-//                             overlayColor: Colors.black,
-//                           ),
-//                           child: SvgPicture.asset("assets/Right.svg"),
-//                         ),
-//                       ],
-//                     ),
-//
-//                     /// Carousel Buttons
-//                     const SizedBox(height: 40),
-//                     Expanded(
-//                       child: SizedBox(
-//                         child: CarouselView(
-//                           onTap: (int index) {
-//                             Navigator.push(
-//                               context,
-//                               MaterialPageRoute(
-//                                 builder: (context) => screenWidgets[index],
-//                               ),
-//                             );
-//                           },
-//                           padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-//                           controller: _carouselController,
-//                           shape: RoundedRectangleBorder(
-//                             borderRadius: BorderRadius.circular(20),
-//                           ),
-//                           backgroundColor: Colors.transparent,
-//                           itemSnapping: true,
-//                           itemExtent: double.infinity,
-//                           children: carouselScreens.entries.map((carouselButton) {
-//                             return CustomCarouselButton(
-//                               title: carouselButton.key,
-//                               image: carouselButton.value,
-//                             );
-//                           }).toList(),
-//                         ),
-//                       ),
-//                     )
-//                   ],
-//                 ),
-//               ),
-//             ),
-//
-//             /// This handles the drawer on the top right of the screen
-//             endDrawer: Drawer(
-//               backgroundColor: AppColors.babyBlue,
-//               child: Padding(
-//                 padding: const EdgeInsets.fromLTRB(0, 70, 0, 0),
-//                 child: ListView(
-//                   padding: EdgeInsets.zero,
-//                   children: [
-//                     CustomListTile(
-//                         title: "Profile", navigation: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen(),),)),
-//                     CustomListTile(
-//                         title: "Account Settings",
-//                         navigation: () => Navigator.pop(context)),
-//                     CustomListTile(
-//                         title: "Swing History",
-//                         navigation: () => Navigator.pop(context)),
-//                     CustomListTile(
-//                         title: "Recalibrate Swing",
-//                         navigation: () => Navigator.pop(context)),
-//                     CustomListTile(
-//                         title: "Disconnect", navigation: () => Navigator.pop(context)),
-//                     ListTile(
-//                       title: const Text(
-//                         "Log Out",
-//                         style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-//                       ),
-//                       trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.red),
-//                       splashColor: Colors.red.withOpacity(.3),
-//                       onTap: () async {
-//                         print("log out");
-//                         await _auth.signout();
-//                       },
-//                     )
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-
-
-
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -300,7 +39,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final account = ref.watch(accountProvider);
+    //final account = ref.watch(accountProvider);
+    final account = ref.watch(accountNotifierProvider);
     final swings = ref.watch(swingsNotifierProvider);
     if (account.displayName != null) {
       List<String> nameParts = account.displayName!.split(' ');
@@ -513,14 +253,14 @@ var bottomNavigatorKey = GlobalKey<State<BottomNavigationBar>>();
 
 
 
-class HomeNavigationWrapper extends StatefulWidget {
+class HomeNavigationWrapper extends ConsumerStatefulWidget {
   const HomeNavigationWrapper({super.key});
 
   @override
-  State<HomeNavigationWrapper> createState() => _HomeNavigationWrapperState();
+  ConsumerState<HomeNavigationWrapper> createState() => _HomeNavigationWrapperState();
 }
 
-class _HomeNavigationWrapperState extends State<HomeNavigationWrapper> {
+class _HomeNavigationWrapperState extends ConsumerState<HomeNavigationWrapper> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
@@ -530,12 +270,6 @@ class _HomeNavigationWrapperState extends State<HomeNavigationWrapper> {
     const ResultsScreen(),
     const ProfileScreen(),
   ];
-
-  void switchTab(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

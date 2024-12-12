@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:golf_accelerator_app/models/account.dart';
+import 'package:golf_accelerator_app/providers/account_provider.dart';
 import 'package:golf_accelerator_app/screens/onboarding/calibrate_club.dart';
 import 'package:golf_accelerator_app/screens/onboarding/local_widgets/primary_hand_button.dart';
 import 'package:golf_accelerator_app/utils/error_dialog.dart';
@@ -147,8 +148,10 @@ class _PrimaryHandState extends ConsumerState<PrimaryHand> {
                   child: ElevatedButton(
                     onPressed: () {
                       if(feet != null && inches != null && selectedHand.isNotEmpty) {
-                        ref.read(accountProvider.notifier).setHeight(totalHeightInCm!);
-                        ref.read(accountProvider.notifier).setPrimaryHand(selectedHand);
+                        // ref.read(accountProvider.notifier).setHeight(totalHeightInCm!);
+                        // ref.read(accountProvider.notifier).setPrimaryHand(selectedHand);
+                        ref.read(accountNotifierProvider.notifier).setHeight(totalHeightInCm!);
+                        ref.read(accountNotifierProvider.notifier).setPrimaryHand(selectedHand);
                         Navigator.push(context, MaterialPageRoute(builder: (context) => const CalibrateClub()));
                       } else {
                         showErrorDialog(context: context, errorMessage: "Incomplete Information", solution: "Please ensure that both your primary hand and height are entered to proceed.");
