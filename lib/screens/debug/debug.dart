@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:golf_accelerator_app/models/bluetooth.dart';
+import 'package:golf_accelerator_app/providers/bluetooth_provider.dart';
 import 'package:golf_accelerator_app/screens/debug/local_widgets/debug_buttons.dart';
 import 'package:nordic_dfu/nordic_dfu.dart';
 
@@ -18,19 +18,22 @@ class DebugScreen extends ConsumerStatefulWidget {
 }
 
 class _DebugScreenState extends ConsumerState<DebugScreen> {
-  final _ble = BluetoothModel();
+  // final _ble = BluetoothModel();
+  //final _ble = ref.read(BluetoothNotifierProvider);
   bool dfuInProgress = false;
   int progress = 0;
 
   void powerMode({required bool wakeup}) {
+    final ble = ref.read(bluetoothNotifierProvider.notifier);
     if(wakeup){
-      _ble.writeToDevice([0xa5,0x50,0x01]);
+      ble.writeToDevice([0xa5,0x50,0x01]);
     } else{
-      _ble.writeToDevice([0xa5,0x50,0x00]);
+      ble.writeToDevice([0xa5,0x50,0x00]);
     }
   }
 
   Future<void> updateFirmware() async {
+    final ble = ref.read(bluetoothNotifierProvider.notifier);
     final result = await FilePicker.platform.pickFiles();
 
     if (result == null) return;
@@ -39,7 +42,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
         dfuInProgress = true;
       });
       final s = await NordicDfu().startDfu(
-        _ble.myConnectedDevice!.remoteId.toString(),
+        ble.connectedDevice!.remoteId.toString(),
         result.files.single.path ?? '',
         onDeviceDisconnecting: (string) {
           print('deviceAddress: $string');

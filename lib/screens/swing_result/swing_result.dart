@@ -8,6 +8,7 @@ import 'package:golf_accelerator_app/models/swing_data.dart';
 import 'package:golf_accelerator_app/screens/swing_result/local_widgets/stats_row.dart';
 import 'package:golf_accelerator_app/screens/swing_result/local_widgets/swing_graph.dart';
 import 'package:golf_accelerator_app/widgets/flat_button.dart';
+import '../../main.dart';
 import '../../theme/app_colors.dart';
 import '../home/home.dart';
 
@@ -22,14 +23,14 @@ class SwingResultScreen extends ConsumerStatefulWidget {
 }
 
 class _SwingResultScreenState extends ConsumerState<SwingResultScreen> {
-  final _ble = BluetoothModel();
+  //final _ble = BluetoothModel();
   int _remainingTime = 5; // Time remaining for the timer
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-
+    print("INIT STATE");
     if (widget.quickView) {
       // Start a timer for 5 seconds
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {

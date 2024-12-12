@@ -23,7 +23,6 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool isSignUpMode = false;
   bool isLoading = false;
-  final AuthService _auth = AuthService();
 
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
@@ -57,7 +56,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
       }
     } else {
-      String? message = await _auth.signup(
+      String? message = await AuthService.signup(
         email: _email.text,
         password: _password.text,
         context: context,
@@ -87,7 +86,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!mounted) return; // Check if the widget is still mounted
     setState(() => isLoading = true);
 
-    String? response = await _auth.signin(
+    String? response = await AuthService.signin(
       email: _email.text.trim(),
       password: _password.text.trim(),
       context: context,
@@ -186,7 +185,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         // Shows loader
                         setState(() => isLoading = true);
                         // Sign in with google
-                        await _auth.signInWithGoogle();
+                        await AuthService.signInWithGoogle();
 
                         // If successful it should sign in automatically and
                         // we shouldn't set state if set state is called after we have navigated to a new screen.
@@ -205,7 +204,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         // Shows loader
                         //setState(() => isLoading = true);
                         // Sign in with facebook
-                        await _auth.signInWithFacebook();
+                        await AuthService.signInWithFacebook();
 
                         // If successful it should sign in automatically and
                         // we shouldn't set state if set state is called after we have navigated to a new screen.
@@ -226,7 +225,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           // Shows loader
                           //setState(() => isLoading = true);
                           // Sign in with apple
-                          await _auth.signInWithApple();
+                          await AuthService.signInWithApple();
 
                           // If successful it should sign in automatically and
                           // we shouldn't set state if set state is called after we have navigated to a new screen.

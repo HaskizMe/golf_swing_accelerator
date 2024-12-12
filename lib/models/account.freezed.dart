@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'accountModel.dart';
+part of 'account.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -14,36 +14,34 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-AccountModel _$AccountModelFromJson(Map<String, dynamic> json) {
-  return _AccountModel.fromJson(json);
+Account _$AccountFromJson(Map<String, dynamic> json) {
+  return _Account.fromJson(json);
 }
 
 /// @nodoc
-mixin _$AccountModel {
+mixin _$Account {
   int? get heightFt => throw _privateConstructorUsedError;
   int? get heightIn => throw _privateConstructorUsedError;
   double? get heightCm => throw _privateConstructorUsedError;
   String? get primaryHand => throw _privateConstructorUsedError;
   String? get skillLevel => throw _privateConstructorUsedError;
   String? get displayName => throw _privateConstructorUsedError;
-  String get email => throw _privateConstructorUsedError;
+  String? get email => throw _privateConstructorUsedError;
   bool get isCalibrated => throw _privateConstructorUsedError;
 
-  /// Serializes this AccountModel to a JSON map.
+  /// Serializes this Account to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of AccountModel
+  /// Create a copy of Account
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $AccountModelCopyWith<AccountModel> get copyWith =>
-      throw _privateConstructorUsedError;
+  $AccountCopyWith<Account> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $AccountModelCopyWith<$Res> {
-  factory $AccountModelCopyWith(
-          AccountModel value, $Res Function(AccountModel) then) =
-      _$AccountModelCopyWithImpl<$Res, AccountModel>;
+abstract class $AccountCopyWith<$Res> {
+  factory $AccountCopyWith(Account value, $Res Function(Account) then) =
+      _$AccountCopyWithImpl<$Res, Account>;
   @useResult
   $Res call(
       {int? heightFt,
@@ -52,21 +50,21 @@ abstract class $AccountModelCopyWith<$Res> {
       String? primaryHand,
       String? skillLevel,
       String? displayName,
-      String email,
+      String? email,
       bool isCalibrated});
 }
 
 /// @nodoc
-class _$AccountModelCopyWithImpl<$Res, $Val extends AccountModel>
-    implements $AccountModelCopyWith<$Res> {
-  _$AccountModelCopyWithImpl(this._value, this._then);
+class _$AccountCopyWithImpl<$Res, $Val extends Account>
+    implements $AccountCopyWith<$Res> {
+  _$AccountCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of AccountModel
+  /// Create a copy of Account
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -77,7 +75,7 @@ class _$AccountModelCopyWithImpl<$Res, $Val extends AccountModel>
     Object? primaryHand = freezed,
     Object? skillLevel = freezed,
     Object? displayName = freezed,
-    Object? email = null,
+    Object? email = freezed,
     Object? isCalibrated = null,
   }) {
     return _then(_value.copyWith(
@@ -105,10 +103,10 @@ class _$AccountModelCopyWithImpl<$Res, $Val extends AccountModel>
           ? _value.displayName
           : displayName // ignore: cast_nullable_to_non_nullable
               as String?,
-      email: null == email
+      email: freezed == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       isCalibrated: null == isCalibrated
           ? _value.isCalibrated
           : isCalibrated // ignore: cast_nullable_to_non_nullable
@@ -118,11 +116,10 @@ class _$AccountModelCopyWithImpl<$Res, $Val extends AccountModel>
 }
 
 /// @nodoc
-abstract class _$$AccountModelImplCopyWith<$Res>
-    implements $AccountModelCopyWith<$Res> {
-  factory _$$AccountModelImplCopyWith(
-          _$AccountModelImpl value, $Res Function(_$AccountModelImpl) then) =
-      __$$AccountModelImplCopyWithImpl<$Res>;
+abstract class _$$AccountImplCopyWith<$Res> implements $AccountCopyWith<$Res> {
+  factory _$$AccountImplCopyWith(
+          _$AccountImpl value, $Res Function(_$AccountImpl) then) =
+      __$$AccountImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -132,19 +129,19 @@ abstract class _$$AccountModelImplCopyWith<$Res>
       String? primaryHand,
       String? skillLevel,
       String? displayName,
-      String email,
+      String? email,
       bool isCalibrated});
 }
 
 /// @nodoc
-class __$$AccountModelImplCopyWithImpl<$Res>
-    extends _$AccountModelCopyWithImpl<$Res, _$AccountModelImpl>
-    implements _$$AccountModelImplCopyWith<$Res> {
-  __$$AccountModelImplCopyWithImpl(
-      _$AccountModelImpl _value, $Res Function(_$AccountModelImpl) _then)
+class __$$AccountImplCopyWithImpl<$Res>
+    extends _$AccountCopyWithImpl<$Res, _$AccountImpl>
+    implements _$$AccountImplCopyWith<$Res> {
+  __$$AccountImplCopyWithImpl(
+      _$AccountImpl _value, $Res Function(_$AccountImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of AccountModel
+  /// Create a copy of Account
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -155,10 +152,10 @@ class __$$AccountModelImplCopyWithImpl<$Res>
     Object? primaryHand = freezed,
     Object? skillLevel = freezed,
     Object? displayName = freezed,
-    Object? email = null,
+    Object? email = freezed,
     Object? isCalibrated = null,
   }) {
-    return _then(_$AccountModelImpl(
+    return _then(_$AccountImpl(
       heightFt: freezed == heightFt
           ? _value.heightFt
           : heightFt // ignore: cast_nullable_to_non_nullable
@@ -183,10 +180,10 @@ class __$$AccountModelImplCopyWithImpl<$Res>
           ? _value.displayName
           : displayName // ignore: cast_nullable_to_non_nullable
               as String?,
-      email: null == email
+      email: freezed == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       isCalibrated: null == isCalibrated
           ? _value.isCalibrated
           : isCalibrated // ignore: cast_nullable_to_non_nullable
@@ -197,19 +194,19 @@ class __$$AccountModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$AccountModelImpl with DiagnosticableTreeMixin implements _AccountModel {
-  const _$AccountModelImpl(
+class _$AccountImpl with DiagnosticableTreeMixin implements _Account {
+  const _$AccountImpl(
       {this.heightFt,
       this.heightIn,
       this.heightCm,
       this.primaryHand,
       this.skillLevel,
       this.displayName,
-      required this.email,
+      this.email,
       this.isCalibrated = false});
 
-  factory _$AccountModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$AccountModelImplFromJson(json);
+  factory _$AccountImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AccountImplFromJson(json);
 
   @override
   final int? heightFt;
@@ -224,21 +221,21 @@ class _$AccountModelImpl with DiagnosticableTreeMixin implements _AccountModel {
   @override
   final String? displayName;
   @override
-  final String email;
+  final String? email;
   @override
   @JsonKey()
   final bool isCalibrated;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'AccountModel(heightFt: $heightFt, heightIn: $heightIn, heightCm: $heightCm, primaryHand: $primaryHand, skillLevel: $skillLevel, displayName: $displayName, email: $email, isCalibrated: $isCalibrated)';
+    return 'Account(heightFt: $heightFt, heightIn: $heightIn, heightCm: $heightCm, primaryHand: $primaryHand, skillLevel: $skillLevel, displayName: $displayName, email: $email, isCalibrated: $isCalibrated)';
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
-      ..add(DiagnosticsProperty('type', 'AccountModel'))
+      ..add(DiagnosticsProperty('type', 'Account'))
       ..add(DiagnosticsProperty('heightFt', heightFt))
       ..add(DiagnosticsProperty('heightIn', heightIn))
       ..add(DiagnosticsProperty('heightCm', heightCm))
@@ -253,7 +250,7 @@ class _$AccountModelImpl with DiagnosticableTreeMixin implements _AccountModel {
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$AccountModelImpl &&
+            other is _$AccountImpl &&
             (identical(other.heightFt, heightFt) ||
                 other.heightFt == heightFt) &&
             (identical(other.heightIn, heightIn) ||
@@ -276,35 +273,34 @@ class _$AccountModelImpl with DiagnosticableTreeMixin implements _AccountModel {
   int get hashCode => Object.hash(runtimeType, heightFt, heightIn, heightCm,
       primaryHand, skillLevel, displayName, email, isCalibrated);
 
-  /// Create a copy of AccountModel
+  /// Create a copy of Account
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$AccountModelImplCopyWith<_$AccountModelImpl> get copyWith =>
-      __$$AccountModelImplCopyWithImpl<_$AccountModelImpl>(this, _$identity);
+  _$$AccountImplCopyWith<_$AccountImpl> get copyWith =>
+      __$$AccountImplCopyWithImpl<_$AccountImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$AccountModelImplToJson(
+    return _$$AccountImplToJson(
       this,
     );
   }
 }
 
-abstract class _AccountModel implements AccountModel {
-  const factory _AccountModel(
+abstract class _Account implements Account {
+  const factory _Account(
       {final int? heightFt,
       final int? heightIn,
       final double? heightCm,
       final String? primaryHand,
       final String? skillLevel,
       final String? displayName,
-      required final String email,
-      final bool isCalibrated}) = _$AccountModelImpl;
+      final String? email,
+      final bool isCalibrated}) = _$AccountImpl;
 
-  factory _AccountModel.fromJson(Map<String, dynamic> json) =
-      _$AccountModelImpl.fromJson;
+  factory _Account.fromJson(Map<String, dynamic> json) = _$AccountImpl.fromJson;
 
   @override
   int? get heightFt;
@@ -319,14 +315,14 @@ abstract class _AccountModel implements AccountModel {
   @override
   String? get displayName;
   @override
-  String get email;
+  String? get email;
   @override
   bool get isCalibrated;
 
-  /// Create a copy of AccountModel
+  /// Create a copy of Account
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$AccountModelImplCopyWith<_$AccountModelImpl> get copyWith =>
+  _$$AccountImplCopyWith<_$AccountImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

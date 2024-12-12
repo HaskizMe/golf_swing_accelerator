@@ -2,6 +2,7 @@ import 'package:cupertino_height_picker/cupertino_height_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/account.dart';
+import 'package:golf_accelerator_app/providers/account_provider.dart';
 import 'package:golf_accelerator_app/services/firestore_service.dart';
 import 'package:golf_accelerator_app/widgets/height_picker.dart';
 import 'package:golf_accelerator_app/widgets/text_field.dart';
@@ -33,7 +34,8 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
     // Initialize based on accountProvider
 // Initialize based on accountProvider
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final account = ref.read(accountProvider);
+      //final account = ref.read(accountProvider);
+      final account = ref.read(accountNotifierProvider);
 
       setState(() {
         _selectedSkillLevel = account.skillLevel ?? "Beginner";
@@ -62,7 +64,6 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
   }
 
   Future<void> updateAccount() async {
-    FirestoreService db = FirestoreService();
     Map<String, dynamic> updates = {};
 
     // Add non-empty fields to the updates map
@@ -83,7 +84,7 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
 
     if (updates.isNotEmpty) {
       try {
-        await db.updateAccountFields(updates);
+        await FirestoreService.updateAccountFields(updates);
         print("Account updated successfully!");
       } catch (e) {
         print("Failed to update account: $e");
@@ -105,7 +106,10 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
 
   @override
   Widget build(BuildContext context) {
-    final account = ref.watch(accountProvider);
+    // final account = ref.watch(accountProvider);
+    final account = ref.watch(accountNotifierProvider);
+
+
     // Assign the display name to the text fields
     // if (account.displayName != null) {
     //   List<String> nameParts = account.displayName!.split(' ');

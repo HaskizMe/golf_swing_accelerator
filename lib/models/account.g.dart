@@ -3,22 +3,29 @@
 part of 'account.dart';
 
 // **************************************************************************
-// RiverpodGenerator
+// JsonSerializableGenerator
 // **************************************************************************
 
-String _$accountHash() => r'efda8e23a88b7ee236281dee8f64d19107f5281d';
+_$AccountImpl _$$AccountImplFromJson(Map<String, dynamic> json) =>
+    _$AccountImpl(
+      heightFt: (json['heightFt'] as num?)?.toInt(),
+      heightIn: (json['heightIn'] as num?)?.toInt(),
+      heightCm: (json['heightCm'] as num?)?.toDouble(),
+      primaryHand: json['primaryHand'] as String?,
+      skillLevel: json['skillLevel'] as String?,
+      displayName: json['displayName'] as String?,
+      email: json['email'] as String?,
+      isCalibrated: json['isCalibrated'] as bool? ?? false,
+    );
 
-/// See also [Account].
-@ProviderFor(Account)
-final accountProvider = NotifierProvider<Account, Account>.internal(
-  Account.new,
-  name: r'accountProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$accountHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef _$Account = Notifier<Account>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+Map<String, dynamic> _$$AccountImplToJson(_$AccountImpl instance) =>
+    <String, dynamic>{
+      'heightFt': instance.heightFt,
+      'heightIn': instance.heightIn,
+      'heightCm': instance.heightCm,
+      'primaryHand': instance.primaryHand,
+      'skillLevel': instance.skillLevel,
+      'displayName': instance.displayName,
+      'email': instance.email,
+      'isCalibrated': instance.isCalibrated,
+    };

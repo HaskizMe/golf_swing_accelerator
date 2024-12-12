@@ -1,169 +1,140 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:golf_accelerator_app/providers/account_provider.dart';
 import 'package:golf_accelerator_app/services/firestore_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:crypto/crypto.dart';
-
-import '../models/account.dart';
 import '../providers/swings.dart';
 
-
-
 class AuthService {
-  // Static instance field
-  static final AuthService _instance = AuthService._internal();
+  // Private constructor to prevent instantiation
+  AuthService._();
 
-  // Private constructor
-  AuthService._internal();
+  // --------------------------------------------------------------------------
+  // Static Variables
+  // --------------------------------------------------------------------------
+  static StreamSubscription<User?>? _authSubscription;
 
-  // Factory constructor to return the singleton instance
-  factory AuthService() {
-    return _instance;
-  }
 
-  final firestore = FirestoreService();
+  // --------------------------------------------------------------------------
+  // Account Creation and Sign-In
+  // --------------------------------------------------------------------------
 
-  Future<String?> signup({required String email, required String password, required BuildContext context}) async {
-
+  /// Signs up a new user with email and password.
+  static Future<String?> signup({required String email, required String password, required BuildContext context}) async {
     try {
-
       print("Creating new account");
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: email,
-          password: password
+        email: email,
+        password: password,
       );
-
       await Future.delayed(const Duration(seconds: 1));
-
-    } on FirebaseAuthException catch(e) {
+    } on FirebaseAuthException catch (e) {
       print(e.code);
-      String message = '';
-      if (e.code == 'weak-password') {
-        message = 'The password provided is too weak.';
-      } else if (e.code == 'email-already-in-use') {
-        message = 'An account already exists with that email.';
-      } else if(e.code == 'invalid-email'){
-        message = 'Invalid Email.';
+      switch (e.code) {
+        case 'weak-password':
+          return 'The password provided is too weak.';
+        case 'email-already-in-use':
+          return 'An account already exists with that email.';
+        case 'invalid-email':
+          return 'Invalid Email.';
+        default:
+          return 'An unknown error occurred.';
       }
-      return message;
-    }
-    catch(e){
-
+    } catch (e) {
       print(e);
+      return 'An error occurred during signup.';
     }
     return null;
-
   }
 
-  Future<String?> signin({required String email, required String password, required BuildContext context}) async {
-
+  /// Signs in an existing user with email and password.
+  static Future<String?> signin({required String email, required String password, required BuildContext context}) async {
     try {
-
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email,
-          password: password
+        email: email,
+        password: password,
       );
-
-      if(FirebaseAuth.instance.currentUser == null){
+      if (FirebaseAuth.instance.currentUser == null) {
         print("User not logged in");
       }
 
       print(FirebaseAuth.instance.currentUser?.email);
-      // Explicitly reload the current user to ensure it's up-to-date
-      //await FirebaseAuth.instance.currentUser?.reload();
-      await firestore.initializeUserInFirestore(); // Store data in firestore
+      await FirestoreService.initializeUserInFirestore(); // Initialize Firestore for the user
       await Future.delayed(const Duration(seconds: 1));
-
-    } on FirebaseAuthException catch(e) {
+    } on FirebaseAuthException catch (e) {
       print(e.code);
-      String message = '';
-      if (e.code == 'invalid-email') {
-        message = 'No user found for that email.';
-      } else if (e.code == 'invalid-credential') {
-        message = 'The credentials that were provided were not valid.';
+      switch (e.code) {
+        case 'invalid-email':
+          return 'No user found for that email.';
+        case 'invalid-credential':
+          return 'Invalid credentials provided.';
+        default:
+          return 'An unknown error occurred.';
       }
-      return message;
-    }
-    catch(e){
+    } catch (e) {
       print(e);
-
+      return 'An error occurred during sign-in.';
     }
     return null;
-
   }
 
-  Future<UserCredential?> signInWithGoogle() async {
+
+  // --------------------------------------------------------------------------
+  // Social Sign-In
+  // --------------------------------------------------------------------------
+
+  /// Signs in a user with Google authentication.
+  static Future<UserCredential?> signInWithGoogle() async {
     try {
       final googleUser = await GoogleSignIn().signIn();
-
       final googleAuth = await googleUser?.authentication;
 
-      final credential = GoogleAuthProvider.credential(idToken: googleAuth?.idToken, accessToken: googleAuth?.accessToken);
+      if (googleAuth == null) return null;
 
-      UserCredential? userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      final credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+        accessToken: googleAuth.accessToken,
+      );
 
-      await firestore.initializeUserInFirestore(); // Store data in firestore
-
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      await FirestoreService.initializeUserInFirestore();
       return userCredential;
-
     } catch (e) {
       print("Error signing in with Google: $e");
+      return null;
     }
-    return null;
   }
 
-  Future<UserCredential?> signInWithFacebook() async {
-    try{
-      // Trigger the sign-in flow
-      final LoginResult loginResult = await FacebookAuth.instance.login();
-
-      // Create a credential from the access token
-      final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
-
-      // Once signed in, return the UserCredential
-      UserCredential? userCredential = await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
-
-      await firestore.initializeUserInFirestore(); // Store data in firestore
-
-      return userCredential;
-    } catch(e) {
-      print("Error signing in with Facebook: $e");
-    }
-    return null;
-  }
-
-  /// Generates a cryptographically secure random nonce, to be included in a
-  /// credential request.
-  String generateNonce([int length = 32]) {
-    const charset =
-        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
-    final random = Random.secure();
-    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
-        .join();
-  }
-
-  /// Returns the sha256 hash of [input] in hex notation.
-  String sha256ofString(String input) {
-    final bytes = utf8.encode(input);
-    final digest = sha256.convert(bytes);
-    return digest.toString();
-  }
-
-
-  Future<UserCredential> signInWithApple() async {
+  /// Signs in a user with Facebook authentication.
+  static Future<UserCredential?> signInWithFacebook() async {
     try {
-      // Generate nonce for security
+      final loginResult = await FacebookAuth.instance.login();
+
+      if (loginResult.accessToken == null) return null;
+
+      final facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+      await FirestoreService.initializeUserInFirestore();
+      return userCredential;
+    } catch (e) {
+      print("Error signing in with Facebook: $e");
+      return null;
+    }
+  }
+
+  /// Signs in a user with Apple authentication.
+  static Future<UserCredential> signInWithApple() async {
+    try {
       final rawNonce = generateNonce();
       final nonce = sha256ofString(rawNonce);
 
-      // Request credential for the Apple account
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
@@ -172,32 +143,14 @@ class AuthService {
         nonce: nonce,
       );
 
-      final fullName = appleCredential.givenName != null
-          ? '${appleCredential.givenName} ${appleCredential.familyName}'
-          : null;
-
-      final email = appleCredential.email;
-
-      print("Full Name: $fullName");
-      print("Email: $email");
-
-      // Debugging: Check the returned identity token
-      if (appleCredential.identityToken == null) {
-        throw Exception("Identity token is null.");
-      }
-
-      // Create an OAuthCredential from Apple credential
       final oauthCredential = OAuthProvider("apple.com").credential(
         idToken: appleCredential.identityToken!,
         rawNonce: rawNonce,
-        accessToken: appleCredential.authorizationCode
+        accessToken: appleCredential.authorizationCode,
       );
 
-      // Sign in to Firebase
-      UserCredential? userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-
-      await firestore.initializeUserInFirestore(); // Store data in firestore
-
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+      await FirestoreService.initializeUserInFirestore();
       return userCredential;
     } catch (e) {
       print("Error during Apple Sign-In: $e");
@@ -205,194 +158,132 @@ class AuthService {
     }
   }
 
-  // /// Initializes the user's Firestore document if it doesn't already exist.
-  // Future<void> initializeUserInFirestore() async {
-  //   // Get the currently signed-in user
-  //   User? currentUser = _auth.currentUser;
-  //
-  //   if (currentUser != null) {
-  //     final userDoc = FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
-  //
-  //     // Check if the user document exists
-  //     final docSnapshot = await userDoc.get();
-  //     if (!docSnapshot.exists) {
-  //       //print("here");
-  //       // Create a new document with initial fields
-  //       await userDoc.set({
-  //         'onboardingComplete': false,
-  //         'displayName': currentUser.displayName,
-  //         'email': currentUser.email,
-  //         'skillLevel': null,
-  //         'primaryHand': null,
-  //         'heightCm': null,
-  //         'createdAt': FieldValue.serverTimestamp(), // Add creation timestamp
-  //       });
-  //
-  //       // print("here 2");
-  //       // // Add a placeholder document to the swings subcollection
-  //       // final swingsCollection = userDoc.collection('swings');
-  //       // await swingsCollection.doc('placeholder').set({
-  //       //   'speed': null,
-  //       //   'carryDistance': null,
-  //       //   'totalDistance': null,
-  //       //   'timestamp': FieldValue.serverTimestamp(),
-  //       // });
-  //       //
-  //       print("User document and swings subcollection initialized.");
-  //     } else {
-  //       print("Document already exists");
-  //     }
-  //   } else {
-  //     print("No user is currently signed in.");
-  //   }
-  // }
+  // --------------------------------------------------------------------------
+  // Utility Methods
+  // --------------------------------------------------------------------------
 
-  /// Updates specific fields in the user's Firestore document.
-  Future<void> updateUserProperties(Map<String, dynamic> updatedFields) async {
-    User? currentUser = FirebaseAuth.instance.currentUser;
-
-    if (currentUser != null) {
-      final userDoc = FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
-
-      try {
-        await userDoc.update(updatedFields);
-        print("User properties updated: $updatedFields");
-      } catch (e) {
-        print("Failed to update user properties: $e");
-      }
-    } else {
-      print("No user is currently signed in.");
-    }
+  /// Generates a cryptographically secure random nonce.
+  static String generateNonce([int length = 32]) {
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
+        .join();
   }
 
-  /// Reads all user information from Firestore.
-  Future<Map<String, dynamic>?> getUserInfo() async {
-    User? currentUser = FirebaseAuth.instance.currentUser;
-
-    if (currentUser != null) {
-      final userDoc = FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
-
-      try {
-        final docSnapshot = await userDoc.get();
-        if (docSnapshot.exists) {
-          return docSnapshot.data(); // Return the document data as a Map
-        } else {
-          print("User document does not exist.");
-          return null;
-        }
-      } catch (e) {
-        print("Failed to read user information: $e");
-        return null;
-      }
-    } else {
-      print("No user is currently signed in.");
-      return null;
-    }
+  /// Returns the sha256 hash of [input] in hex notation.
+  static String sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
   }
 
 
-  /// Reads all user information and associated swings from Firestore.
-  Future<Map<String, dynamic>?> getUserInfoWithSwings() async {
-    User? currentUser = FirebaseAuth.instance.currentUser;
+  // --------------------------------------------------------------------------
+  // Authentication Management
+  // --------------------------------------------------------------------------
 
-    if (currentUser != null) {
-      final userDoc = FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
-      final swingsCollection = userDoc.collection('swings');
-
-      try {
-        // Fetch user information
-        final userSnapshot = await userDoc.get();
-        if (!userSnapshot.exists) {
-          print("User document does not exist.");
-          return null;
-        }
-
-        final userData = userSnapshot.data();
-
-        // Fetch swings
-        final swingsSnapshot = await swingsCollection.get();
-        final swings = swingsSnapshot.docs.map((doc) {
-          final swingData = doc.data();
-          swingData['docId'] = doc.id; // Add the document ID for reference
-          return swingData;
-        }).toList();
-
-        // Combine user data and swings
-        return {
-          ...?userData, // Add user data
-          'swings': swings, // Add swings as a list
-        };
-      } catch (e) {
-        print("Failed to fetch user information and swings: $e");
-        return null;
-      }
-    } else {
-      print("No user is currently signed in.");
-      return null;
-    }
-  }
-
-  Future<bool> checkOnboardingStatus() async {
-    Map<String, dynamic>? info = await getUserInfo();
-
-    if (info != null) {
-      // Safely access the 'onboardingComplete' property
-      bool onboardingComplete = info['onboardingComplete'] ?? false;
-
-      if (onboardingComplete) {
-        print("Onboarding is complete!");
-        return true;
-        // Perform actions for completed onboarding
-      } else {
-        print("Onboarding is not complete.");
-        // Perform actions for incomplete onboarding
-      }
-    } else {
-      print("Failed to retrieve user information.");
-    }
-    return false;
-  }
-
-  Future<bool> validateUserInFirestore() async {
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
-      final docSnapshot = await userDoc.get();
-
-      if (!docSnapshot.exists) {
-        // User does not exist in Firestore, sign them out
-        await FirebaseAuth.instance.signOut();
-        print("User not found in Firestore. Signed out.");
-        return false;
-      }
-      return true;
-    }
-    return false;
-  }
-
-  Future<void> signout(WidgetRef ref) async {
+  /// Signs out the user and invalidates providers.
+  static Future<void> signout(WidgetRef ref) async {
     try {
-      // Stop any active Firestore listeners
-      await ref.read(accountProvider).cancelListeners();
-      ref.invalidate(accountProvider); // Invalidate account listener
-      ref.invalidate(swingsNotifierProvider); // Invalidate swings listener
+      // Stop other Firestore listeners
+      await ref.read(accountNotifierProvider.notifier).cancelListeners();
+      ref.invalidate(accountNotifierProvider);
+      ref.invalidate(swingsNotifierProvider);
 
       // Sign out the user
       await FirebaseAuth.instance.signOut();
+
       print("User signed out successfully.");
     } catch (e) {
       print("Error during sign out: $e");
     }
   }
 
-  void setupLoginListener() {
-    FirebaseAuth.instance.userChanges().listen((User? user) {
-      if (user == null) {
-        print('User is currently signed out!');
-      } else {
-        print('User is signed in!');
+  /// Reauthenticates the user really useful when deleting an account or updating email.
+  static Future<void> reauthenticate(BuildContext context, User currentUser) async {
+    try {
+      for (final provider in currentUser.providerData) {
+        print("Provider ID: ${provider.providerId}");
+
+        if (provider.providerId == 'google.com') {
+          // Reauthenticate with Google
+          final googleUser = await GoogleSignIn().signIn();
+          if (googleUser == null) {
+            throw Exception("Google sign-in was canceled.");
+          }
+
+          final googleAuth = await googleUser.authentication;
+          final credential = GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken,
+            idToken: googleAuth.idToken,
+          );
+
+          await currentUser.reauthenticateWithCredential(credential);
+          print("Reauthenticated with Google.");
+        } else if (provider.providerId == 'apple.com') {
+          // Reauthenticate with Apple
+          final rawNonce = generateNonce(); // Helper function to generate nonce
+          final nonce = AuthService.sha256ofString(rawNonce);
+
+          final appleCredential = await SignInWithApple.getAppleIDCredential(
+            scopes: [AppleIDAuthorizationScopes.email],
+            nonce: nonce,
+          );
+
+          final credential = OAuthProvider("apple.com").credential(
+            idToken: appleCredential.identityToken,
+            rawNonce: rawNonce,
+          );
+
+          await currentUser.reauthenticateWithCredential(credential);
+          print("Reauthenticated with Apple.");
+        } else if (provider.providerId == 'password') {
+          // Reauthenticate with Email/Password
+          final password = await _promptForPassword(context);
+          final credential = EmailAuthProvider.credential(
+            email: currentUser.email!,
+            password: password,
+          );
+
+          await currentUser.reauthenticateWithCredential(credential);
+          print("Reauthenticated with Email/Password.");
+        } else {
+          print("No reauthentication flow for provider: ${provider.providerId}");
+        }
       }
-    });
+    } catch (e) {
+      print("Reauthentication failed: $e");
+      throw Exception("Reauthentication failed.");
+    }
+  }
+
+  /// Helper method to prompt for a password
+  static Future<String> _promptForPassword(BuildContext context) async {
+    String password = "";
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Reauthenticate"),
+        content: TextField(
+          obscureText: true,
+          decoration: const InputDecoration(labelText: "Enter your password"),
+          onChanged: (value) {
+            password = value;
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Submit"),
+          ),
+        ],
+      ),
+    );
+    return password;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/account.dart';
+import 'package:golf_accelerator_app/providers/account_provider.dart';
 import 'package:golf_accelerator_app/screens/profile/local_widget/profile_attribute.dart';
 import 'package:golf_accelerator_app/services/firestore_service.dart';
 import 'package:golf_accelerator_app/utils/error_dialog.dart';
@@ -16,11 +17,12 @@ class ProfileView extends ConsumerStatefulWidget {
 }
 
 class _ProfileViewState extends ConsumerState<ProfileView> {
-  final _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
-    final account = ref.watch(accountProvider);
+    // final account = ref.watch(accountProvider);
+    final account = ref.watch(accountNotifierProvider);
+
     return Column(
       children: [
         ElevatedButton(
@@ -32,7 +34,8 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
           child: const Text("Edit Profile"),
         ),
         const SizedBox(height: 20),
-        Text("${account.displayName}", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,),),
+        if(account.displayName != null)
+          Text("${account.displayName}", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,),),
         const SizedBox(height: 20),
         ProfileAttribute(title: "Display Name", data: account.displayName == null || account.displayName!.isEmpty ? "No Name" :"${account.displayName}"),
         const SizedBox(height: 10,),
@@ -46,7 +49,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
         //const SizedBox(height: 20),
         ListTile(
           onTap: () async {
-            await _auth.signout(ref);
+            await AuthService.signout(ref);
           },
           leading: const Text(
             "Logout", style: TextStyle(fontSize: 16,
@@ -62,8 +65,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                 errorMessage: "Delete Account",
                 solution: "Are you sure you want to delete your account? Your information will be deleted forever.",
                 onTap: () {
-                  final db = FirestoreService();
-                  db.deleteAccount(context, ref);
+                  FirestoreService.deleteAccount(context, ref);
                 });
             // Delete account action
           },

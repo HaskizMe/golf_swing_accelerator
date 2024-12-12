@@ -5,10 +5,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show DeviceOrientation, SystemChrome, rootBundle;
 import 'package:golf_accelerator_app/models/account.dart';
+import 'package:golf_accelerator_app/providers/account_provider.dart';
+import 'package:golf_accelerator_app/providers/bluetooth_provider.dart';
 import 'package:golf_accelerator_app/screens/home/home.dart';
 import 'package:golf_accelerator_app/screens/login/login.dart';
 import 'package:golf_accelerator_app/screens/onboarding/welcome.dart';
 import 'package:golf_accelerator_app/services/auth_service.dart';
+import 'package:golf_accelerator_app/services/firestore_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,18 +66,19 @@ class MyApp extends ConsumerStatefulWidget {
 
 class _MyAppState extends ConsumerState<MyApp> {
   late StreamSubscription<User?> _authSubscription;
-  final AuthService _authService = AuthService();
 
   @override
   void initState() {
     super.initState();
+
+    //AuthService.startAuthListener();
 
     // Set up the listener for authentication state changes
     // This listens to any changes throughout the app to see if user ever logs out
     // or is already signed in.
     _authSubscription = FirebaseAuth.instance.userChanges().listen((User? user) async {
       if (user == null) {
-        //print("here4");
+        print("User not logged in");
 
         // Navigate to the login screen if the user is signed out
         navigatorKey.currentState?.pushAndRemoveUntil(
@@ -82,14 +86,14 @@ class _MyAppState extends ConsumerState<MyApp> {
               (route) => false,
         );
       } else {
-        print("user not null");
-        bool isOnboardingComplete = await _authService.checkOnboardingStatus();
+        print("user logged in");
+        bool isOnboardingComplete = await FirestoreService.checkOnboardingStatus();
         if(isOnboardingComplete){
           print("user onboarding not complete");
-          Map<String, dynamic>? accountInfo = await _authService.getUserInfoWithSwings();
+          Map<String, dynamic>? accountInfo = await FirestoreService.getUserInfoWithSwings();
           //print(accountInfo);
           if (accountInfo != null) {
-            await ref.read(accountProvider.notifier).initializeAccountAndSwings(accountInfo);
+            await ref.read(accountNotifierProvider.notifier).initializeAccountAndSwings(accountInfo);
             print("Account and swings initialized successfully.");
           } else {
             print("Failed to fetch user data.");
@@ -99,11 +103,11 @@ class _MyAppState extends ConsumerState<MyApp> {
             MaterialPageRoute(builder: (context) => const HomeNavigationWrapper()),
                 (route) => false,
           );
-        } else if(await _authService.validateUserInFirestore()) {
+        } else if(await FirestoreService.validateUserInFirestore()) {
           // Navigate to the welcome screen if the user is signed in
-          Map<String, dynamic>? accountInfo = await _authService.getUserInfoWithSwings();
+          Map<String, dynamic>? accountInfo = await FirestoreService.getUserInfoWithSwings();
           if (accountInfo != null) {
-            await ref.read(accountProvider.notifier).initializeAccountAndSwings(accountInfo);
+            await ref.read(accountNotifierProvider.notifier).initializeAccountAndSwings(accountInfo);
             print("Account and swings initialized successfully.");
           } else {
             print("Failed to fetch user data.");
