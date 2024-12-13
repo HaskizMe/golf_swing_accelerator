@@ -1,12 +1,8 @@
 import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:golf_accelerator_app/services/auth_service.dart';
-import 'package:golf_accelerator_app/screens/onboarding/golfer_skill.dart';
-import 'package:golf_accelerator_app/screens/onboarding/welcome.dart';
 import 'package:golf_accelerator_app/theme/app_colors.dart';
 import 'package:golf_accelerator_app/utils/error_dialog.dart';
 
@@ -25,6 +21,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool isLoading = false;
 
   final TextEditingController _email = TextEditingController();
+  final TextEditingController _forgotPasswordEmail = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final TextEditingController _confirmPassword = TextEditingController();
 
@@ -36,6 +33,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _email.dispose();
     _password.dispose();
     _confirmPassword.dispose();
+    _forgotPasswordEmail.dispose();
   }
 
   @override
@@ -107,6 +105,71 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  _showError({required String response}) {
+    showErrorDialog(context: context, errorMessage: response, solution: "");
+  }
+
+  _showConfirmationDialog({required String title, required String description}){
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: Text(title, style: const TextStyle(color: Colors.black),),
+        content: Text(description),
+        actions: [
+          TextButton(
+            style: TextButton.styleFrom(
+                overlayColor: Colors.black,
+                foregroundColor: Colors.black
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _promptForEmail() async {
+    _forgotPasswordEmail.text = "";
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text("Enter Email", style: TextStyle(color: Colors.black),),
+        content: CustomTextField(hintText: "Forgot Password", controller: _forgotPasswordEmail,),
+        actions: [
+          TextButton(
+            style: TextButton.styleFrom(
+              overlayColor: Colors.black,
+              foregroundColor: Colors.black
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(
+                overlayColor: Colors.black,
+                foregroundColor: Colors.black
+            ),
+            onPressed: () async {
+              Navigator.of(context).pop();
+              String? response = await AuthService.forgotPassword(email: _forgotPasswordEmail.text);
+              if(response != null){
+                if(!mounted) return;
+                _showError(response: response);
+              }
+              else {
+                _showConfirmationDialog(title: "Email Sent", description: "An email was sent to: ${_forgotPasswordEmail.text}. Please click on the link to reset your password");
+              }
+            },
+            child: const Text("Reset Password"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,7 +201,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       crossFadeState: isSignUpMode ? CrossFadeState.showSecond : CrossFadeState.showFirst,
                       duration: const Duration(milliseconds: 300),
                     ),
-
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text("Having trouble signing in?"),
+                        TextButton(
+                          onPressed: () {
+                            _promptForEmail();
+                          },
+                          style: TextButton.styleFrom(
+                            overlayColor: AppColors.forestGreen.withOpacity(0.1),
+                          ),
+                          child: const Text(
+                            "Forgot Password",
+                            style: TextStyle(color: AppColors.darkPastelGreen),
+                          ),
+                        )
+                      ],
+                    ),
                     const SizedBox(height: 15,),
 
                     Container(
@@ -196,25 +276,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                       },
                     ),
-                    const SizedBox(height: 5,),
-                    SignInButton(
-                      text: 'Sign in With Facebook',
-                      image: SvgPicture.asset("assets/facebook 3.svg"),
-                      onTap: () async {
-                        // Shows loader
-                        //setState(() => isLoading = true);
-                        // Sign in with facebook
-                        await AuthService.signInWithFacebook();
-
-                        // If successful it should sign in automatically and
-                        // we shouldn't set state if set state is called after we have navigated to a new screen.
-                        // That's why we check if the tree is still mounted
-                        if(mounted){
-                          setState(() => isLoading = false);
-                        }
-
-                      },
-                    ),
+                    //const SizedBox(height: 5,),
+                    // SignInButton(
+                    //   text: 'Sign in With Facebook',
+                    //   image: SvgPicture.asset("assets/facebook 3.svg"),
+                    //   onTap: () async {
+                    //     // Shows loader
+                    //     //setState(() => isLoading = true);
+                    //     // Sign in with facebook
+                    //     await AuthService.signInWithFacebook();
+                    //
+                    //     // If successful it should sign in automatically and
+                    //     // we shouldn't set state if set state is called after we have navigated to a new screen.
+                    //     // That's why we check if the tree is still mounted
+                    //     if(mounted){
+                    //       setState(() => isLoading = false);
+                    //     }
+                    //
+                    //   },
+                    // ),
                     const SizedBox(height: 5,),
                     Visibility(
                       visible: Platform.isIOS,

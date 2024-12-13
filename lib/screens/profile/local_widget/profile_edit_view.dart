@@ -2,7 +2,7 @@ import 'package:cupertino_height_picker/cupertino_height_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/account.dart';
-import 'package:golf_accelerator_app/providers/account_provider.dart';
+import 'package:golf_accelerator_app/providers/account_notifier.dart';
 import 'package:golf_accelerator_app/services/firestore_service.dart';
 import 'package:golf_accelerator_app/widgets/height_picker.dart';
 import 'package:golf_accelerator_app/widgets/text_field.dart';

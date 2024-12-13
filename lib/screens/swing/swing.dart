@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/bluetooth.dart';
-import 'package:golf_accelerator_app/providers/bluetooth_provider.dart';
-import 'package:golf_accelerator_app/providers/device_collecting_status.dart';
-import 'package:golf_accelerator_app/providers/swings.dart';
+import 'package:golf_accelerator_app/providers/bluetooth_notifier.dart';
+import 'package:golf_accelerator_app/providers/device_notifier.dart';
+import 'package:golf_accelerator_app/providers/swings_notifier.dart';
 import 'package:golf_accelerator_app/screens/swing_result/swing_result.dart';
 import '../../theme/app_colors.dart';
 
@@ -59,7 +59,7 @@ class _SwingScreenState extends ConsumerState<SwingScreen> {
   @override
   Widget build(BuildContext context) {
     final swings = ref.watch(swingsNotifierProvider);
-    final loader = ref.watch(deviceCollectingStatusProvider); // Tracks loading state
+    final loader = ref.watch(golfDeviceNotifierProvider); // Tracks loading state
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width - 20;
 
@@ -204,7 +204,7 @@ class _SwingScreenState extends ConsumerState<SwingScreen> {
               ),
             ),
             // Loader overlay
-            if (loader)
+            if (loader.collectingData)
               Container(
                 color: Colors.black54, // Semi-transparent background
                 alignment: Alignment.center,

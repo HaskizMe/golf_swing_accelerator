@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/device.dart';
 import 'package:golf_accelerator_app/models/swing_data.dart';
-import 'package:golf_accelerator_app/providers/swings.dart';
+import 'package:golf_accelerator_app/providers/swings_notifier.dart';
 import 'package:golf_accelerator_app/screens/swing_result/swing_result.dart';
 import 'package:golf_accelerator_app/services/firestore_service.dart';
 import 'package:intl/intl.dart';

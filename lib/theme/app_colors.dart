@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Utility class to store colors used in the app
+// Utility class to store colors used in the app
 class AppColors {
   AppColors._();
 
