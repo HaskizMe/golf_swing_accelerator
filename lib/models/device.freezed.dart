@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'device_model.dart';
+part of 'device.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -22,6 +22,7 @@ mixin _$GolfDevice {
   String get swingPointsHeader => throw _privateConstructorUsedError;
   List<double> get tempSwingDataPoints => throw _privateConstructorUsedError;
   int get tempSpeed => throw _privateConstructorUsedError;
+  bool get collectingData => throw _privateConstructorUsedError;
 
   /// Create a copy of GolfDevice
   /// with the given fields replaced by the non-null parameter values.
@@ -42,7 +43,8 @@ abstract class $GolfDeviceCopyWith<$Res> {
       String mphPacketHeader,
       String swingPointsHeader,
       List<double> tempSwingDataPoints,
-      int tempSpeed});
+      int tempSpeed,
+      bool collectingData});
 }
 
 /// @nodoc
@@ -66,6 +68,7 @@ class _$GolfDeviceCopyWithImpl<$Res, $Val extends GolfDevice>
     Object? swingPointsHeader = null,
     Object? tempSwingDataPoints = null,
     Object? tempSpeed = null,
+    Object? collectingData = null,
   }) {
     return _then(_value.copyWith(
       endOfPacketHeader: null == endOfPacketHeader
@@ -92,6 +95,10 @@ class _$GolfDeviceCopyWithImpl<$Res, $Val extends GolfDevice>
           ? _value.tempSpeed
           : tempSpeed // ignore: cast_nullable_to_non_nullable
               as int,
+      collectingData: null == collectingData
+          ? _value.collectingData
+          : collectingData // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -110,7 +117,8 @@ abstract class _$$GolfDeviceImplCopyWith<$Res>
       String mphPacketHeader,
       String swingPointsHeader,
       List<double> tempSwingDataPoints,
-      int tempSpeed});
+      int tempSpeed,
+      bool collectingData});
 }
 
 /// @nodoc
@@ -132,6 +140,7 @@ class __$$GolfDeviceImplCopyWithImpl<$Res>
     Object? swingPointsHeader = null,
     Object? tempSwingDataPoints = null,
     Object? tempSpeed = null,
+    Object? collectingData = null,
   }) {
     return _then(_$GolfDeviceImpl(
       endOfPacketHeader: null == endOfPacketHeader
@@ -158,6 +167,10 @@ class __$$GolfDeviceImplCopyWithImpl<$Res>
           ? _value.tempSpeed
           : tempSpeed // ignore: cast_nullable_to_non_nullable
               as int,
+      collectingData: null == collectingData
+          ? _value.collectingData
+          : collectingData // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -171,7 +184,8 @@ class _$GolfDeviceImpl implements _GolfDevice {
       this.mphPacketHeader = "a573",
       this.swingPointsHeader = "a572",
       final List<double> tempSwingDataPoints = const [],
-      this.tempSpeed = 0})
+      this.tempSpeed = 0,
+      this.collectingData = false})
       : _tempSwingDataPoints = tempSwingDataPoints;
 
   @override
@@ -199,10 +213,13 @@ class _$GolfDeviceImpl implements _GolfDevice {
   @override
   @JsonKey()
   final int tempSpeed;
+  @override
+  @JsonKey()
+  final bool collectingData;
 
   @override
   String toString() {
-    return 'GolfDevice(endOfPacketHeader: $endOfPacketHeader, startOfPacketHeader: $startOfPacketHeader, mphPacketHeader: $mphPacketHeader, swingPointsHeader: $swingPointsHeader, tempSwingDataPoints: $tempSwingDataPoints, tempSpeed: $tempSpeed)';
+    return 'GolfDevice(endOfPacketHeader: $endOfPacketHeader, startOfPacketHeader: $startOfPacketHeader, mphPacketHeader: $mphPacketHeader, swingPointsHeader: $swingPointsHeader, tempSwingDataPoints: $tempSwingDataPoints, tempSpeed: $tempSpeed, collectingData: $collectingData)';
   }
 
   @override
@@ -221,7 +238,9 @@ class _$GolfDeviceImpl implements _GolfDevice {
             const DeepCollectionEquality()
                 .equals(other._tempSwingDataPoints, _tempSwingDataPoints) &&
             (identical(other.tempSpeed, tempSpeed) ||
-                other.tempSpeed == tempSpeed));
+                other.tempSpeed == tempSpeed) &&
+            (identical(other.collectingData, collectingData) ||
+                other.collectingData == collectingData));
   }
 
   @override
@@ -232,7 +251,8 @@ class _$GolfDeviceImpl implements _GolfDevice {
       mphPacketHeader,
       swingPointsHeader,
       const DeepCollectionEquality().hash(_tempSwingDataPoints),
-      tempSpeed);
+      tempSpeed,
+      collectingData);
 
   /// Create a copy of GolfDevice
   /// with the given fields replaced by the non-null parameter values.
@@ -250,7 +270,8 @@ abstract class _GolfDevice implements GolfDevice {
       final String mphPacketHeader,
       final String swingPointsHeader,
       final List<double> tempSwingDataPoints,
-      final int tempSpeed}) = _$GolfDeviceImpl;
+      final int tempSpeed,
+      final bool collectingData}) = _$GolfDeviceImpl;
 
   @override
   String get endOfPacketHeader;
@@ -264,6 +285,8 @@ abstract class _GolfDevice implements GolfDevice {
   List<double> get tempSwingDataPoints;
   @override
   int get tempSpeed;
+  @override
+  bool get collectingData;
 
   /// Create a copy of GolfDevice
   /// with the given fields replaced by the non-null parameter values.

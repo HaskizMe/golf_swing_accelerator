@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:golf_accelerator_app/providers/bluetooth_provider.dart';
+import 'package:golf_accelerator_app/providers/bluetooth_notifier.dart';
 import 'package:golf_accelerator_app/screens/debug/local_widgets/debug_buttons.dart';
 import 'package:nordic_dfu/nordic_dfu.dart';
 

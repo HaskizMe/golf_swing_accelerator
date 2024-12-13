@@ -2,20 +2,19 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:golf_accelerator_app/providers/account_provider.dart';
+import 'package:golf_accelerator_app/providers/account_notifier.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../main.dart';
 import '../models/account.dart';
 import '../models/device.dart';
-import '../models/device_model.dart';
+import '../models/device.dart';
 import '../models/swing_data.dart';
 import '../screens/swing_result/swing_result.dart';
 import '../services/firestore_service.dart';
 import '../utils/utility_functions.dart';
-import 'device_collecting_status.dart';
 
-part 'device_provider.g.dart';
+part 'device_notifier.g.dart';
 
 @Riverpod(keepAlive: true)
 class GolfDeviceNotifier extends _$GolfDeviceNotifier {
@@ -25,9 +24,8 @@ class GolfDeviceNotifier extends _$GolfDeviceNotifier {
   @override
   GolfDevice build() {
     _account = ref.read(accountNotifierProvider);
-    return GolfDevice(); // Initial state: No account data loaded
+    return const GolfDevice(); // Initial state: No account data loaded
   }
-
 
   /// This function is is the entry point to what we should do with data received from device
   /// If the header doesn't match any in the attributes we will just ignore it.
@@ -67,21 +65,22 @@ class GolfDeviceNotifier extends _$GolfDeviceNotifier {
     print("Start of Packet");
 
     // This tells our Swing Screen UI to show a loading screen
-    ref.read(deviceCollectingStatusProvider.notifier).startReceivingData();
+    startReceivingData();
 
-    //state.tempSwingDataPoints.clear();
+    // At every start we will clear the tempSwingDataPoints array and also the temp speed
     state = state.copyWith(tempSwingDataPoints: [], tempSpeed: 0);
-    //tempTimeStamp = "";
   }
 
   // Handles the end of a packet and stores the swing data
   Future<void> handleEndOfPacket(BuildContext context) async {
     print("End of Packet");
     SwingData swing = SwingData(speed: state.tempSpeed, swingPoints: state.tempSwingDataPoints);
+
+    // Add the swing to database
     await FirestoreService.addSwing(swing);
 
     // This tells our UI to hide the loading screen
-    ref.read(deviceCollectingStatusProvider.notifier).stopReceivingData();
+    stopReceivingData();
 
     // Check if the SwingResultScreen is already displayed
     bool isScreenAlreadyPresent = false;
@@ -104,7 +103,6 @@ class GolfDeviceNotifier extends _$GolfDeviceNotifier {
       ),
     );
     print("Data points: ${state.tempSwingDataPoints}");
-    //ref.read(swingsNotifierProvider.notifier).addSwing(swing);
   }
 
   // Handles swing points data
@@ -131,8 +129,7 @@ class GolfDeviceNotifier extends _$GolfDeviceNotifier {
     );
   }
 
-  // Handles MPH packet and sets speed and timestamp
-  /// This calculates mph from g-force
+  // This calculates mph from g-force
   void handleMphPacket(String data) {
     print("Getting MPH");
 
@@ -150,9 +147,17 @@ class GolfDeviceNotifier extends _$GolfDeviceNotifier {
     double mph = (linearVelocity * 2.23694).roundToDouble();
     print("ts = $ts, len = $len, combinedValue = $mph");
 
-    //tempSpeed = mph.toInt();
     state = state.copyWith(tempSpeed: mph.toInt());
-    //tempTimeStamp = ts;
+  }
+
+  // Set the status to `true`, indicating data is being received.
+  void startReceivingData() {
+    state = state.copyWith(collectingData: true);
+  }
+
+  // Set the status to `false`, indicating data is no longer being received.
+  void stopReceivingData() {
+    state = state.copyWith(collectingData: false);
   }
 
 }

@@ -5,13 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:golf_accelerator_app/providers/account_provider.dart';
+import 'package:golf_accelerator_app/providers/account_notifier.dart';
 import 'package:golf_accelerator_app/services/firestore_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:crypto/crypto.dart';
-import '../providers/swings.dart';
+import '../providers/swings_notifier.dart';
 
+// Utility class for authentication
 class AuthService {
   // Private constructor to prevent instantiation
   AuthService._();
@@ -285,5 +286,22 @@ class AuthService {
       ),
     );
     return password;
+  }
+
+  /// Method to reset password
+  static Future<String?> forgotPassword({required String email}) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      return null;
+    } on FirebaseAuthException catch (err) {
+      //print(err.message.toString());
+      return err.message.toString();
+      //throw Exception(err.message.toString());
+    } catch (err) {
+      print(err.toString());
+
+      return "Unknown Error";
+      //throw Exception(err.toString());
+    }
   }
 }

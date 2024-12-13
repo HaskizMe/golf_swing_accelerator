@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/account.dart';
-import 'package:golf_accelerator_app/providers/account_provider.dart';
+import 'package:golf_accelerator_app/providers/account_notifier.dart';
 import 'package:golf_accelerator_app/screens/profile/local_widget/profile_attribute.dart';
 import 'package:golf_accelerator_app/services/firestore_service.dart';
 import 'package:golf_accelerator_app/utils/error_dialog.dart';

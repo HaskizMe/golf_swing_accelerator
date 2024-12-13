@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:golf_accelerator_app/models/account.dart';
-import 'package:golf_accelerator_app/providers/account_provider.dart';
+import 'package:golf_accelerator_app/providers/account_notifier.dart';
 import 'package:golf_accelerator_app/screens/onboarding/calibrate_club.dart';
 import 'package:golf_accelerator_app/screens/onboarding/local_widgets/primary_hand_button.dart';
 import 'package:golf_accelerator_app/utils/error_dialog.dart';

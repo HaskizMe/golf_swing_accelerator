@@ -2,11 +2,11 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:golf_accelerator_app/models/account.dart';
-import 'package:golf_accelerator_app/providers/swings.dart';
+import 'package:golf_accelerator_app/providers/swings_notifier.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../models/swing_data.dart';
 
-part 'account_provider.g.dart';
+part 'account_notifier.g.dart';
 
 @Riverpod(keepAlive: true)
 class AccountNotifier extends _$AccountNotifier {

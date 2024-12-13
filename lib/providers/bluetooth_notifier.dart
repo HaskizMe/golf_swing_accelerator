@@ -3,13 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/bluetooth.dart';
-import 'package:golf_accelerator_app/providers/device_provider.dart';
+import 'package:golf_accelerator_app/providers/device_notifier.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../models/device.dart';
-import 'device_collecting_status.dart';
-
-part 'bluetooth_provider.g.dart';
+part 'bluetooth_notifier.g.dart';
 
 @Riverpod(keepAlive: true)
 class BluetoothNotifier extends _$BluetoothNotifier {
@@ -28,7 +25,7 @@ class BluetoothNotifier extends _$BluetoothNotifier {
 
 
   // Methods
-  Future<bool> connectDevice(BluetoothDevice device, DeviceCollectingStatus notifier) async {
+  Future<bool> connectDevice(BluetoothDevice device) async {
     bool success = false;
     try {
       await device.connect();
@@ -41,7 +38,8 @@ class BluetoothNotifier extends _$BluetoothNotifier {
         if (state == BluetoothConnectionState.disconnected) {
           print("Device Disconnected");
           print("Error disconnection description: ${device.disconnectReason}");
-          notifier.stopReceivingData();
+          //notifier.stopReceivingData();
+          ref.read(golfDeviceNotifierProvider.notifier).stopReceivingData();
           setConnectedDevice(null);
           //myConnectedDevice = null;
         } else if (state == BluetoothConnectionState.connected) {

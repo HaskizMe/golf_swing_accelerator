@@ -120,3 +120,47 @@ void showErrorDialogOptions({required BuildContext context, required String erro
     );
   }
 }
+
+// void showAlertDialog({required BuildContext context, required String title, required Widget content}) {
+//
+//   showDialog(
+//   context: context,
+//   builder: (context) => AlertDialog(
+//     backgroundColor: Colors.white,
+//     title: Text(title, style: TextStyle(color: Colors.black),),
+//     content: content,
+//     actions: [
+//       TextButton(
+//         style: TextButton.styleFrom(
+//             overlayColor: Colors.black,
+//             foregroundColor: Colors.black
+//         ),
+//         onPressed: () => Navigator.of(context).pop(),
+//         child: const Text("Cancel"),
+//       ),
+//       TextButton(
+//         style: TextButton.styleFrom(
+//             overlayColor: Colors.black,
+//             foregroundColor: Colors.black
+//         ),
+//         onPressed: () async {
+//           Navigator.of(context).pop();
+//           String? response = await AuthService.forgotPassword(email: _forgotPasswordEmail.text);
+//           if(response != null){
+//             if(!mounted) return;
+//             _showError(response: response);
+//           }
+//           else {
+//             setState(() async {
+//               showSuccessMessage = true;
+//               await Future.delayed(const Duration(seconds: 2));
+//               showSuccessMessage = false;
+//             });
+//           }
+//         },
+//         child: const Text("Reset Password"),
+//       ),
+//     ],
+//   ),
+//   );
+// }
