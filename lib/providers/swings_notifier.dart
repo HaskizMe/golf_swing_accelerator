@@ -1,7 +1,7 @@
 import 'package:golf_accelerator_app/models/swing_data.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'swings.g.dart';
+part 'swings_notifier.g.dart';
 
 @Riverpod(keepAlive: true)
 class SwingsNotifier extends _$SwingsNotifier {
@@ -12,9 +12,6 @@ class SwingsNotifier extends _$SwingsNotifier {
 
   // Add Swing
   void addSwing(SwingData swing) {
-    print("added swing");
-
-    print(swing.swingId);
     // Concatenate the new event to the current state
     state = [...state, swing];
 

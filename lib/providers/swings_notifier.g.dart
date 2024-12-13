@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'swings.dart';
+part of 'swings_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$swingsNotifierHash() => r'7baf14d8c94350928629c751e9fde9e4096297a4';
+String _$swingsNotifierHash() => r'eee66702bd8ec2157d5363d9ebc3ec665b36e77b';
 
 /// See also [SwingsNotifier].
 @ProviderFor(SwingsNotifier)

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextField extends StatefulWidget {
   final String hintText;
@@ -30,6 +31,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
       child: AbsorbPointer(
         absorbing: widget.readOnly == true, // Prevent text editing if readOnly
         child: TextField(
+          inputFormatters: [
+            FilteringTextInputFormatter.deny(RegExp(r'\s')), // Disallow spaces
+          ],
           controller: widget.controller,
           obscureText: widget.obscureText,
           decoration: InputDecoration(

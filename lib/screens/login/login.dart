@@ -1,12 +1,8 @@
 import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:golf_accelerator_app/services/auth_service.dart';
-import 'package:golf_accelerator_app/screens/onboarding/golfer_skill.dart';
-import 'package:golf_accelerator_app/screens/onboarding/welcome.dart';
 import 'package:golf_accelerator_app/theme/app_colors.dart';
 import 'package:golf_accelerator_app/utils/error_dialog.dart';
 
@@ -23,9 +19,9 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool isSignUpMode = false;
   bool isLoading = false;
-  final AuthService _auth = AuthService();
 
   final TextEditingController _email = TextEditingController();
+  final TextEditingController _forgotPasswordEmail = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final TextEditingController _confirmPassword = TextEditingController();
 
@@ -37,6 +33,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _email.dispose();
     _password.dispose();
     _confirmPassword.dispose();
+    _forgotPasswordEmail.dispose();
   }
 
   @override
@@ -57,7 +54,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
       }
     } else {
-      String? message = await _auth.signup(
+      String? message = await AuthService.signup(
         email: _email.text,
         password: _password.text,
         context: context,
@@ -87,9 +84,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!mounted) return; // Check if the widget is still mounted
     setState(() => isLoading = true);
 
-    String? response = await _auth.signin(
-      email: _email.text,
-      password: _password.text,
+    String? response = await AuthService.signin(
+      email: _email.text.trim(),
+      password: _password.text.trim(),
       context: context,
     );
 
@@ -106,6 +103,71 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (mounted) {
       setState(() => isLoading = false);
     }
+  }
+
+  _showError({required String response}) {
+    showErrorDialog(context: context, errorMessage: response, solution: "");
+  }
+
+  _showConfirmationDialog({required String title, required String description}){
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: Text(title, style: const TextStyle(color: Colors.black),),
+        content: Text(description),
+        actions: [
+          TextButton(
+            style: TextButton.styleFrom(
+                overlayColor: Colors.black,
+                foregroundColor: Colors.black
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _promptForEmail() async {
+    _forgotPasswordEmail.text = "";
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text("Enter Email", style: TextStyle(color: Colors.black),),
+        content: CustomTextField(hintText: "Forgot Password", controller: _forgotPasswordEmail,),
+        actions: [
+          TextButton(
+            style: TextButton.styleFrom(
+              overlayColor: Colors.black,
+              foregroundColor: Colors.black
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(
+                overlayColor: Colors.black,
+                foregroundColor: Colors.black
+            ),
+            onPressed: () async {
+              Navigator.of(context).pop();
+              String? response = await AuthService.forgotPassword(email: _forgotPasswordEmail.text);
+              if(response != null){
+                if(!mounted) return;
+                _showError(response: response);
+              }
+              else {
+                _showConfirmationDialog(title: "Email Sent", description: "An email was sent to: ${_forgotPasswordEmail.text}. Please click on the link to reset your password");
+              }
+            },
+            child: const Text("Reset Password"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -139,14 +201,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       crossFadeState: isSignUpMode ? CrossFadeState.showSecond : CrossFadeState.showFirst,
                       duration: const Duration(milliseconds: 300),
                     ),
-
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text("Having trouble signing in?"),
+                        TextButton(
+                          onPressed: () {
+                            _promptForEmail();
+                          },
+                          style: TextButton.styleFrom(
+                            overlayColor: AppColors.forestGreen.withOpacity(0.1),
+                          ),
+                          child: const Text(
+                            "Forgot Password",
+                            style: TextStyle(color: AppColors.darkPastelGreen),
+                          ),
+                        )
+                      ],
+                    ),
                     const SizedBox(height: 15,),
 
                     Container(
                       height: 50,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(colors: [AppColors.silverLakeBlue, AppColors.skyBlue]),
+                        gradient: const LinearGradient(colors: [AppColors.forestGreen, AppColors.emerald]),
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: ElevatedButton(
@@ -186,7 +265,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         // Shows loader
                         setState(() => isLoading = true);
                         // Sign in with google
-                        await _auth.signInWithGoogle();
+                        await AuthService.signInWithGoogle();
 
                         // If successful it should sign in automatically and
                         // we shouldn't set state if set state is called after we have navigated to a new screen.
@@ -197,25 +276,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                       },
                     ),
-                    const SizedBox(height: 5,),
-                    SignInButton(
-                      text: 'Sign in With Facebook',
-                      image: SvgPicture.asset("assets/facebook 3.svg"),
-                      onTap: () async {
-                        // Shows loader
-                        //setState(() => isLoading = true);
-                        // Sign in with facebook
-                        await _auth.signInWithFacebook();
-
-                        // If successful it should sign in automatically and
-                        // we shouldn't set state if set state is called after we have navigated to a new screen.
-                        // That's why we check if the tree is still mounted
-                        if(mounted){
-                          setState(() => isLoading = false);
-                        }
-
-                      },
-                    ),
+                    //const SizedBox(height: 5,),
+                    // SignInButton(
+                    //   text: 'Sign in With Facebook',
+                    //   image: SvgPicture.asset("assets/facebook 3.svg"),
+                    //   onTap: () async {
+                    //     // Shows loader
+                    //     //setState(() => isLoading = true);
+                    //     // Sign in with facebook
+                    //     await AuthService.signInWithFacebook();
+                    //
+                    //     // If successful it should sign in automatically and
+                    //     // we shouldn't set state if set state is called after we have navigated to a new screen.
+                    //     // That's why we check if the tree is still mounted
+                    //     if(mounted){
+                    //       setState(() => isLoading = false);
+                    //     }
+                    //
+                    //   },
+                    // ),
                     const SizedBox(height: 5,),
                     Visibility(
                       visible: Platform.isIOS,
@@ -226,7 +305,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           // Shows loader
                           //setState(() => isLoading = true);
                           // Sign in with apple
-                          await _auth.signInWithApple();
+                          await AuthService.signInWithApple();
 
                           // If successful it should sign in automatically and
                           // we shouldn't set state if set state is called after we have navigated to a new screen.
@@ -250,14 +329,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             });
                           },
                           style: TextButton.styleFrom(
-                            overlayColor: Colors.blue.withOpacity(0.1),
+                            overlayColor: AppColors.forestGreen.withOpacity(0.1),
                           ),
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 300),
                             child: Text(
                               isSignUpMode ? "Login Here" : "Sign Up",
                               key: ValueKey(isSignUpMode),
-                              style: TextStyle(color: Colors.blue),
+                              style: const TextStyle(color: AppColors.darkPastelGreen),
                             ),
                           ),
                         )

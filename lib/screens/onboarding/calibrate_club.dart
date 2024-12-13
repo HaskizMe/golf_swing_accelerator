@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:golf_accelerator_app/models/account.dart';
+import 'package:golf_accelerator_app/providers/account_notifier.dart';
 import 'package:golf_accelerator_app/screens/home/home.dart';
 import 'package:golf_accelerator_app/services/auth_service.dart';
+import '../../services/firestore_service.dart';
 import '../../theme/app_colors.dart';
 
 class CalibrateClub extends ConsumerStatefulWidget {
@@ -23,7 +25,8 @@ class _CalibrateClubState extends ConsumerState<CalibrateClub> {
   }
 
   Future<void> _onTapUp(TapUpDetails details) async {
-    final account = ref.read(accountProvider.notifier);
+    //final account = ref.read(accountProvider.notifier);
+    final account = ref.read(accountNotifierProvider.notifier);
 
     setState(() => _isTapped = false);
 
@@ -36,8 +39,7 @@ class _CalibrateClubState extends ConsumerState<CalibrateClub> {
       onBoardingIsComplete = true;
     }
 
-    AuthService auth = AuthService();
-    await auth.updateUserProperties({
+    await FirestoreService.updateUserProperties({
       'skillLevel': skillLevel,
       'primaryHand': primaryHand,
       'onboardingComplete': onBoardingIsComplete,
@@ -47,7 +49,7 @@ class _CalibrateClubState extends ConsumerState<CalibrateClub> {
     if(!mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute(builder: (context) => const HomeNavigationWrapper()),
           (Route<dynamic> route) => false, // This condition removes all previous routes.
     );
   }
@@ -60,52 +62,43 @@ class _CalibrateClubState extends ConsumerState<CalibrateClub> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.silverLakeBlue, AppColors.skyBlue],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+    return Scaffold(
+      backgroundColor: AppColors.forestGreen,
+      appBar: AppBar(
+        backgroundColor: AppColors.forestGreen,
+        iconTheme: const IconThemeData(
+          color: Colors.white,
         ),
       ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          iconTheme: const IconThemeData(
-            color: Colors.white,
-          ),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Calibrate with SVG",
-                style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 60),
-              GestureDetector(
-                onTapDown: _onTapDown,
-                onTapUp: _onTapUp,
-                onTapCancel: _onTapCancel,
-                child: Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.identity()..scale(-1.0, 1.0), // Flip on the X-axis
-                  child: SvgPicture.asset(
-                    "assets/Vector.svg",
-                    height: 300,
-                    colorFilter: _isTapped
-                        ? ColorFilter.mode(Colors.black.withOpacity(.2), BlendMode.srcIn)
-                        : const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                  ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              "Calibrate with SVG",
+              style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 60),
+            GestureDetector(
+              onTapDown: _onTapDown,
+              onTapUp: _onTapUp,
+              onTapCancel: _onTapCancel,
+              child: Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.identity()..scale(-1.0, 1.0), // Flip on the X-axis
+                child: SvgPicture.asset(
+                  "assets/Vector.svg",
+                  height: 300,
+                  colorFilter: _isTapped
+                      ? ColorFilter.mode(Colors.black.withOpacity(.2), BlendMode.srcIn)
+                      : const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

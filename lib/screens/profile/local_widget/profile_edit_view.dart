@@ -2,6 +2,7 @@ import 'package:cupertino_height_picker/cupertino_height_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golf_accelerator_app/models/account.dart';
+import 'package:golf_accelerator_app/providers/account_notifier.dart';
 import 'package:golf_accelerator_app/services/firestore_service.dart';
 import 'package:golf_accelerator_app/widgets/height_picker.dart';
 import 'package:golf_accelerator_app/widgets/text_field.dart';
@@ -31,14 +32,22 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
     super.initState();
 
     // Initialize based on accountProvider
+// Initialize based on accountProvider
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final account = ref.read(accountProvider);
+      //final account = ref.read(accountProvider);
+      final account = ref.read(accountNotifierProvider);
 
       setState(() {
         _selectedSkillLevel = account.skillLevel ?? "Beginner";
         _selectedHand = account.primaryHand ?? "Right";
 
-        // Optionally initialize height field
+        // Initialize text controllers if account data exists
+        if (account.displayName != null) {
+          List<String> nameParts = account.displayName!.split(' ');
+          _firstName.text = nameParts.isNotEmpty ? nameParts[0] : '';
+          _lastName.text = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+        }
+
         if (account.heightFt != null && account.heightIn != null) {
           _height.text = "${account.heightFt} ft ${account.heightIn} in";
         }
@@ -55,11 +64,12 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
   }
 
   Future<void> updateAccount() async {
-    FirestoreService db = FirestoreService();
     Map<String, dynamic> updates = {};
 
     // Add non-empty fields to the updates map
     if (_firstName.text.isNotEmpty || _lastName.text.isNotEmpty) {
+      print(_firstName.text);
+      print(_lastName.text);
       updates["displayName"] = "${_firstName.text.trim()} ${_lastName.text.trim()}";
     }
     if (totalHeightInCm != null) {
@@ -74,7 +84,7 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
 
     if (updates.isNotEmpty) {
       try {
-        await db.updateAccountFields(updates);
+        await FirestoreService.updateAccountFields(updates);
         print("Account updated successfully!");
       } catch (e) {
         print("Failed to update account: $e");
@@ -96,14 +106,17 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
 
   @override
   Widget build(BuildContext context) {
-    final account = ref.watch(accountProvider);
+    // final account = ref.watch(accountProvider);
+    final account = ref.watch(accountNotifierProvider);
+
+
     // Assign the display name to the text fields
-    if (account.displayName != null) {
-      List<String> nameParts = account.displayName!.split(' ');
-      // Assign firstName and lastName
-      _firstName.text = nameParts.isNotEmpty ? nameParts[0] : '';
-      _lastName.text = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
-    }
+    // if (account.displayName != null) {
+    //   List<String> nameParts = account.displayName!.split(' ');
+    //   // Assign firstName and lastName
+    //   _firstName.text = nameParts.isNotEmpty ? nameParts[0] : '';
+    //   _lastName.text = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+    // }
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
       child: Column(
@@ -184,14 +197,14 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                     borderSide: const BorderSide(
-                      color: Colors.blue, // Enabled border color
+                      color: AppColors.forestGreen, // Enabled border color
                       width: 1.5,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                     borderSide: const BorderSide(
-                      color: AppColors.silverLakeBlue, // Focused border color
+                      color: AppColors.forestGreen, // Focused border color
                       width: 2.0,
                     ),
                   ),
@@ -218,7 +231,7 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
                     builder: (context, constraints) => ToggleButtons(
                       color: Colors.black,
                       selectedColor: Colors.white,
-                      fillColor: AppColors.silverLakeBlue,
+                      fillColor: AppColors.forestGreen,
                       constraints: BoxConstraints.expand(width: constraints.maxWidth/2 - 20),
                       isSelected: [_selectedHand == "Left", _selectedHand == "Right"],
                       onPressed: (index) {

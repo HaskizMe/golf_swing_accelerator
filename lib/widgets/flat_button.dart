@@ -20,7 +20,7 @@ class CustomFlatButton extends StatelessWidget {
           // Navigator.push(context, MaterialPageRoute(builder: (context) => const PrimaryHand()));
         },
         style: OutlinedButton.styleFrom(
-          overlayColor: Colors.white,
+          overlayColor: Colors.black,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
