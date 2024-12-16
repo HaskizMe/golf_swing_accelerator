@@ -35,7 +35,7 @@ class _WebViewExampleState extends State<WebViewExample> {
     return Scaffold(
       appBar: AppBar(title: const Text('Custom HTML from Asset')),
       body: _htmlContent == null
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Colors.black,))
           : WebViewWidget(controller: _controller),
     );
   }

@@ -20,7 +20,6 @@ class SwingData {
 
   // Methods
 
-
   // Method to calculate carry distance
   int getCarryDistance() {
     return (speed * 2.45).toInt();
