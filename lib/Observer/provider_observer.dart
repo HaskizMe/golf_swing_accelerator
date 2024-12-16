@@ -29,7 +29,7 @@ class MyObserver extends ProviderObserver {
       Object? newValue,
       ProviderContainer container,
       ) {
-    print('Provider $provider updated from $previousValue to $newValue');
+    //print('Provider $provider updated from $previousValue to $newValue');
   }
 
   @override
