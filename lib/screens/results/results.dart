@@ -1,51 +1,41 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-import 'package:golf_accelerator_app/models/device.dart';
 import 'package:golf_accelerator_app/models/swing_data.dart';
 import 'package:golf_accelerator_app/providers/swings_notifier.dart';
 import 'package:golf_accelerator_app/screens/swing_result/swing_result.dart';
 import 'package:golf_accelerator_app/services/firestore_service.dart';
 import 'package:intl/intl.dart';
+
 import '../../theme/app_colors.dart';
-import '../home/home.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-import 'package:golf_accelerator_app/models/swing_data.dart';
-import 'package:golf_accelerator_app/providers/swings_notifier.dart';
-import 'package:golf_accelerator_app/screens/swing_result/swing_result.dart';
-import 'package:intl/intl.dart';
 
 
 final List<SwingData> swings = [
-  SwingData(
-    swingId: '1',
-    speed: 80,
-    swingPoints: [1.0, 2.0, 3.0],
-    createdAt: Timestamp.fromDate(DateTime(2025, 1, 5)),
-  ),
-  SwingData(
-    swingId: '2',
-    speed: 85,
-    swingPoints: [1.5, 2.5, 3.5],
-    createdAt: Timestamp.fromDate(DateTime(2025, 1, 15)),
-  ),
-  SwingData(
-    swingId: '3',
-    speed: 75,
-    swingPoints: [1.2, 2.2, 3.2],
-    createdAt: Timestamp.fromDate(DateTime(2025, 1, 25)),
-  ),
-  SwingData(
-    swingId: '3',
-    speed: 75,
-    swingPoints: [1.2, 2.2, 3.2],
-    createdAt: Timestamp.fromDate(DateTime(2026, 1, 25)),
-  ),
+  // SwingData(
+  //   swingId: '1',
+  //   speed: 80,
+  //   swingPoints: [1.0, 2.0, 3.0],
+  //   createdAt: Timestamp.fromDate(DateTime(2025, 1, 5)),
+  // ),
+  // SwingData(
+  //   swingId: '2',
+  //   speed: 85,
+  //   swingPoints: [1.5, 2.5, 3.5],
+  //   createdAt: Timestamp.fromDate(DateTime(2025, 1, 15)),
+  // ),
+  // SwingData(
+  //   swingId: '3',
+  //   speed: 75,
+  //   swingPoints: [1.2, 2.2, 3.2],
+  //   createdAt: Timestamp.fromDate(DateTime(2025, 1, 25)),
+  // ),
+  // SwingData(
+  //   swingId: '3',
+  //   speed: 75,
+  //   swingPoints: [1.2, 2.2, 3.2],
+  //   createdAt: Timestamp.fromDate(DateTime(2026, 1, 25)),
+  // ),
   // SwingData(
   //   swingId: '3',
   //   speed: 75,
@@ -95,11 +85,11 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
     final swings = ref.watch(swingsNotifierProvider);
 
     if (swings.isEmpty) {
-      return Scaffold(
+      return const Scaffold(
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
+            children: [
               Text(
                 "No swing data available.",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -123,7 +113,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
           return SliverStickyHeader(
             header: Container(
               height: 60,
-              color: Colors.green[800],
+              color: AppColors.forestGreen,
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
@@ -151,30 +141,91 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
                         ),
                       );
                     },
-                    child: Card(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 4,
-                        horizontal: 16,
-                      ),
-                      elevation: 2,
-                      child: ListTile(
-                        title: Text(
-                          swing.createdAt != null
-                              ? formatDate(swing.createdAt!.toDate())
-                              : "Unknown Date",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                    child: Dismissible(
+                      key: ValueKey(swing.swingId), // Unique key for each card
+                      direction: DismissDirection.endToStart, // Only swipe from right to left
+                      background: Container(
+                        color: Colors.red, // Red background for delete
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                          size: 30,
                         ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                      secondaryBackground: Container(
+                        color: Colors.redAccent, // Slightly different shade of red
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Text("Speed: ${swing.speed} mph"),
+                            Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                            SizedBox(width: 8),
                             Text(
-                                "Carry Distance: ${swing.getCarryDistance()} yards"),
-                            Text("Total Distance: ${swing.getTotalDistance()} yards"),
+                              "Delete",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                    ),
+                      onDismissed: (direction) {
+                        // Call function to handle deletion
+                        FirestoreService.deleteSwing(swing.swingId!);
+
+                        // Show confirmation Snackbar
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Swing deleted"),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 4,
+                          horizontal: 16,
+                        ),
+                        elevation: 2,
+                        child: ListTile(
+                          title: Text(
+                            swing.createdAt != null
+                                ? formatDate(swing.createdAt!.toDate())
+                                : "Unknown Date",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Speed: ${swing.speed} mph"),
+                              Text("Carry Distance: ${swing.getCarryDistance()} yards"),
+                              Text("Total Distance: ${swing.getTotalDistance()} yards"),
+                            ],
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SwingResultScreen(
+                                  quickView: false,
+                                  swing: swing,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    )
+
                   );
                 },
                 childCount: swingsForMonth.length,
@@ -183,274 +234,6 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen> {
           );
         }).toList(),
       ),
-    );
-  }
-}
-// class ResultsScreen extends ConsumerStatefulWidget {
-//   const ResultsScreen({super.key});
-//
-//   @override
-//   ConsumerState<ResultsScreen> createState() => _ResultsScreenState();
-// }
-//
-// class _ResultsScreenState extends ConsumerState<ResultsScreen> {
-//
-//   void onSlideDismissed(SwingData swing){
-//     // Handle the deletion
-//     FirestoreService.deleteSwing(swing.swingId!);
-//
-//     // Show a snackbar
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(
-//         content: Text("Swing deleted"),
-//         duration: Duration(seconds: 2),
-//       ),
-//     );
-//   }
-//
-//   // Function to format the date
-//   String formatDate(DateTime date) {
-//     final DateFormat formatter = DateFormat("MMM dd, yyyy 'AT' hh:mma");
-//     return formatter.format(date).toUpperCase(); // Convert "am/pm" to uppercase
-//   }
-//
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final swings = ref.watch(swingsNotifierProvider);
-//
-//     //print("${swings[0].createdAt?.toDate()}");
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: swings.isEmpty
-//             ? Center(
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               const Text(
-//                 "No swing data available.",
-//                 style: TextStyle(color: AppColors.forestGreen, fontSize: 20),
-//               ),
-//               const SizedBox(height: 10,),
-//               ElevatedButton(
-//                   onPressed: () {
-//                     /// This allows me to switch tabs in the bottom navigation
-//                     BottomNavigationBar navigationBar =  bottomNavigatorKey.currentWidget as BottomNavigationBar;
-//                     navigationBar.onTap!(1);
-//                     },
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: AppColors.forestGreen,
-//                     foregroundColor: Colors.white
-//                   ),
-//                   child: const Text("Practice Swinging Club"))
-//             ],
-//           ),
-//         )
-//             : ListView.builder(
-//           itemCount: swings.length,
-//           itemBuilder: (context, index) {
-//             final swing = swings[index];
-//             return Dismissible(
-//               key: ValueKey(swing.swingId), // Ensure each item has a unique key
-//               direction: DismissDirection.endToStart, // Allow swiping only to the right
-//               background: Container(
-//                 color: Colors.red,
-//                 alignment: Alignment.centerRight,
-//                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
-//                 child: const Icon(
-//                   Icons.delete,
-//                   color: Colors.white,
-//                   size: 30,
-//                 ),
-//               ),
-//               onDismissed: (direction) => onSlideDismissed(swing),
-//               child: InkWell(
-//                 onTap: () {
-//                   Navigator.push(
-//                     context,
-//                     MaterialPageRoute(
-//                       builder: (context) => SwingResultScreen(
-//                         quickView: false,
-//                         swing: swing,
-//                       ),
-//                     ),
-//                   );
-//                 },
-//                 child: Card(
-//                   elevation: 2,
-//                   color: Colors.white.withOpacity(0.9),
-//                   margin: const EdgeInsets.symmetric(vertical: 8.0),
-//                   shape: RoundedRectangleBorder(
-//                     borderRadius: BorderRadius.circular(8.0), // Optional: Adjust corner radius
-//                     side: const BorderSide(
-//                       color: Colors.grey, // Border color
-//                       width: 1.5, // Border width
-//                     ),
-//                   ),
-//                   child: ListTile(
-//                     title: Text(
-//                       swing.createdAt != null
-//                           ? formatDate(swing.createdAt!.toDate())
-//                           : "Unknown Date",
-//                       style: const TextStyle(fontWeight: FontWeight.bold),
-//                     ),
-//                     subtitle: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         Text("Speed: ${swing.speed} mph"),
-//                         Text("Carry Distance: ${swing.getCarryDistance()} yards"),
-//                         Text("Total Distance: ${swing.getTotalDistance()} yards"),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
-
-class SettingsAppBarApp extends StatelessWidget {
-  const SettingsAppBarApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(home: SettingsAppBarExample());
-  }
-}
-
-class SettingsAppBarExample extends StatefulWidget {
-  const SettingsAppBarExample({super.key});
-
-  @override
-  State<SettingsAppBarExample> createState() => _SettingsAppBarExampleState();
-}
-
-class _SettingsAppBarExampleState extends State<SettingsAppBarExample> {
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(),
-      backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
-          SliverStickyHeader.builder(
-            builder: (context, state) => Container(
-              height: 60.0,
-              color: (state.isPinned ? AppColors.forestGreen : Colors.grey)
-                  .withOpacity(1.0 - state.scrollPercentage),
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Header #1',
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                    (context, i) => ListTile(
-                  leading: CircleAvatar(
-                    child: Text('0'),
-                  ),
-                  title: Text('List tile #$i'),
-                ),
-                childCount: 4,
-              ),
-            ),
-          ),
-          SliverStickyHeader.builder(
-            builder: (context, state) => Container(
-              height: 60.0,
-              color: (state.isPinned ? AppColors.forestGreen : Colors.grey)
-                  .withOpacity(1.0 - state.scrollPercentage),
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Header #1',
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                    (context, i) => ListTile(
-                  leading: CircleAvatar(
-                    child: Text('0'),
-                  ),
-                  title: Text('List tile #$i'),
-                ),
-                childCount: 4,
-              ),
-            ),
-          ),
-          SliverStickyHeader.builder(
-            builder: (context, state) => Container(
-              height: 60.0,
-              color: (state.isPinned ? AppColors.forestGreen : Colors.grey)
-                  .withOpacity(1.0 - state.scrollPercentage),
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Header #1',
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                    (context, i) => ListTile(
-                  leading: CircleAvatar(
-                    child: Text('0'),
-                  ),
-                  title: Text('List tile #$i'),
-                ),
-                childCount: 4,
-              ),
-            ),
-          ),
-          SliverStickyHeader.builder(
-            builder: (context, state) => Container(
-              height: 60.0,
-              color: (state.isPinned ? Colors.pink : Colors.lightBlue)
-                  .withOpacity(1.0 - state.scrollPercentage),
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Header #1',
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                    (context, i) => ListTile(
-                  leading: CircleAvatar(
-                    child: Text('0'),
-                  ),
-                  title: Text('List tile #$i'),
-                ),
-                childCount: 4,
-              ),
-            ),
-          )
-        ],
-      )
     );
   }
 }

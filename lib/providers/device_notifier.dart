@@ -68,7 +68,7 @@ class GolfDeviceNotifier extends _$GolfDeviceNotifier {
     startReceivingData();
 
     // At every start we will clear the tempSwingDataPoints array and also the temp speed
-    state = state.copyWith(tempSwingDataPoints: [], tempSpeed: 0);
+    state = state.copyWith(tempSwingDataPoints: {"x": [], "y": [], "z": []}, tempSpeed: 0);
   }
 
   // Handles the end of a packet and stores the swing data
@@ -111,21 +111,52 @@ class GolfDeviceNotifier extends _$GolfDeviceNotifier {
     print("Getting swing z data points");
 
     // Extract new points from the data
-    List<double> newPoints = [];
-    for (int i = 18; i < data.length; i += 4) {
-      String hexSegment = data.substring(i, i + 4);
-      print(hexSegment);
+    //List<double> newPoints = [];
+    // Extract new points from the data
+    List<double> xPoints = [];
+    List<double> yPoints = [];
+    List<double> zPoints = [];
+    // for (int i = 4; i < data.length; i += 12) {
+    //   String hexSegment = data.substring(i, i + 4);
+    //   print(hexSegment);
+    //
+    //   int zCombinedValue = hexToString(hexSegment);
+    //   print("z combined value: $zCombinedValue");
+    //
+    //   double zGForce = zCombinedValue / 100;
+    //   newPoints.add(zGForce); // Add new points
+    // }
 
-      int zCombinedValue = hexToString(hexSegment);
-      print("z combined value: $zCombinedValue");
+    for (int i = 4; i < data.length; i += 12) {
+      // Extract X, Y, Z hex segments
+      String xHex = data.substring(i, i + 4);
+      String yHex = data.substring(i + 4, i + 8);
+      String zHex = data.substring(i + 8, i + 12);
 
-      double zGForce = zCombinedValue / 100;
-      newPoints.add(zGForce); // Add new points
+      // Convert to combined int values
+      int xValue = hexToString(xHex);
+      int yValue = hexToString(yHex);
+      int zValue = hexToString(zHex);
+      print("x: $xValue, y: $yValue, z: $zValue");
+
+      // Convert to g-force
+      xPoints.add(xValue / 100.0);
+      yPoints.add(yValue / 100.0);
+      zPoints.add(zValue / 100.0);
+      print("x gforce: $xValue, y gforce: $yValue, z gforce: $zValue");
     }
 
     // Update state with accumulated points
+    // state = state.copyWith(
+    //   tempSwingDataPoints: [...state.tempSwingDataPoints, ...newPoints],
+    // );
+    // Update state with accumulated XYZ points
     state = state.copyWith(
-      tempSwingDataPoints: [...state.tempSwingDataPoints, ...newPoints],
+      tempSwingDataPoints: {
+        "x": [...state.tempSwingDataPoints["x"] ?? [], ...xPoints],
+        "y": [...state.tempSwingDataPoints["y"] ?? [], ...yPoints],
+        "z": [...state.tempSwingDataPoints["z"] ?? [], ...zPoints],
+      },
     );
   }
 

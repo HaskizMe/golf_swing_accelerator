@@ -1,8 +1,9 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:golf_accelerator_app/models/swing_data.dart';
 import '../../../theme/app_colors.dart';
+import 'dart:math';
+
 
 class SwingGraph extends StatefulWidget {
   final SwingData swing;
@@ -12,6 +13,17 @@ class SwingGraph extends StatefulWidget {
 }
 
 class _SwingGraphState extends State<SwingGraph> {
+  late double maxY; // Max Y value for the graph
+  late double minY; // Min Y value for the graph
+
+  @override
+  void initState() {
+    super.initState();
+    // Calculate maxY and minY dynamically based on the 'z' data
+    final zValues = widget.swing.swingPoints['z']!;
+    maxY = zValues.reduce(max) + 20; // Max value + 20
+    minY = zValues.reduce(min) - 20; // Min value - 20
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +46,7 @@ class _SwingGraphState extends State<SwingGraph> {
                 ),
                 isCurved: true,
                 color: Colors.yellow,
-                spots: widget.swing.swingPoints
+                spots: widget.swing.swingPoints['z']!
                     .asMap()
                     .entries
                     .map((entry) => FlSpot(entry.key.toDouble(), entry.value))
@@ -56,19 +68,24 @@ class _SwingGraphState extends State<SwingGraph> {
                 sideTitles: SideTitles(
                   reservedSize: 60,
                   showTitles: true,
-                  interval: 10, // Set the interval for x-axis labels
+                  //interval: widget.swing.swingPoints['z']!.length / 20, // Set the interval for x-axis labels
                   getTitlesWidget: (value, meta) {
-                    return Text(
-                      "${value.toInt()} G's", // Display the value as an integer
-                      style: const TextStyle(color: Colors.black),
-                    );
+                    if (value == meta.max) {
+                      return const Text('');
+                    } else if (value == meta.min) {
+                      return const Text('');
+                    } else {
+                      return Text(
+                        "${value.toInt()} G's", // Display the value as an integer
+                        style: const TextStyle(color: Colors.black),
+                      );
+                    }
                   },
                 ),
               ),
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
-                  showTitles: true,
-                  interval: widget.swing.swingPoints.length / 6, // Set the interval for x-axis labels
+                  showTitles: false,
                   getTitlesWidget: (value, meta) {
                     return Text(
                       value.toInt().toString(), // Display the value as an integer
@@ -78,8 +95,8 @@ class _SwingGraphState extends State<SwingGraph> {
                 ),
               ),
             ),
-            maxY: 40,
-            minY: -20,
+            maxY: maxY,
+            minY: minY,
           ),
         ),
       ),

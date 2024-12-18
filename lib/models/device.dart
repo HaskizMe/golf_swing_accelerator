@@ -12,7 +12,8 @@ class GolfDevice with _$GolfDevice {
     @Default("a553") String startOfPacketHeader,
     @Default("a573") String mphPacketHeader,
     @Default("a572") String swingPointsHeader,
-    @Default([]) List<double> tempSwingDataPoints,
+    //@Default([]) List<double> tempSwingDataPoints,
+    @Default({"x": [], "y": [], "z": []}) Map<String, List<double>> tempSwingDataPoints,
     @Default(0) int tempSpeed,
     @Default(false) bool collectingData,
   }) = _GolfDevice;

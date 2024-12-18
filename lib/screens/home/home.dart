@@ -1,29 +1,15 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:golf_accelerator_app/models/account.dart';
-import 'package:golf_accelerator_app/models/swing_data.dart';
 import 'package:golf_accelerator_app/providers/account_notifier.dart';
-import 'package:golf_accelerator_app/providers/bluetooth_notifier.dart';
 import 'package:golf_accelerator_app/providers/swings_notifier.dart';
-import 'package:golf_accelerator_app/screens/3d/3d.dart';
-import 'package:golf_accelerator_app/screens/home/local_widgets/carousel_buttons.dart';
-import 'package:golf_accelerator_app/screens/home/local_widgets/list_tile.dart';
 import 'package:golf_accelerator_app/screens/home/local_widgets/swing_card.dart';
 import 'package:golf_accelerator_app/screens/profile/local_widget/profile_picture.dart';
 import 'package:golf_accelerator_app/screens/profile/profile.dart';
 import 'package:golf_accelerator_app/screens/test/test.dart';
-import 'package:golf_accelerator_app/services/auth_service.dart';
-import 'package:golf_accelerator_app/services/firestore_service.dart';
 import 'package:golf_accelerator_app/widgets/custom_button.dart';
-import 'package:golf_accelerator_app/widgets/flat_button.dart';
-import '../../models/bluetooth.dart';
 import '../../theme/app_colors.dart';
-import '../debug/debug.dart';
-import '../login/login.dart';
 import '../results/results.dart';
 import '../scan/scan.dart';
 import '../swing/swing.dart';
@@ -233,15 +219,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               const SizedBox(height: 40),
-
-              // ElevatedButton(onPressed: () {
-              //   Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //       builder: (context) => DebugScreen(deviceName: "Test",),
-              //     ),
-              //   );
-              // }, child: Text("test"))
             ],
           ),
         ),
@@ -251,7 +228,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 }
 
 
-final bottomNavigatorKey = GlobalKey<State<BottomNavigationBar>>();
+GlobalKey<State<BottomNavigationBar>> bottomNavigatorKey = GlobalKey<State<BottomNavigationBar>>();
 
 
 
@@ -272,7 +249,7 @@ class _HomeNavigationWrapperState extends ConsumerState<HomeNavigationWrapper> {
     //SettingsAppBarApp(),
     const ResultsScreen(),
     const ProfileScreen(),
-    ThreeD(),
+    //const ThreeD(),
   ];
 
   @override
@@ -312,10 +289,10 @@ class _HomeNavigationWrapperState extends ConsumerState<HomeNavigationWrapper> {
             icon: Icon(Icons.account_circle),
             label: "Account",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bug_report_outlined),
-            label: "Testing",
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.bug_report_outlined),
+          //   label: "Testing",
+          // ),
         ],
       ),
     );

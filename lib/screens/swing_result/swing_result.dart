@@ -11,6 +11,7 @@ import 'package:golf_accelerator_app/widgets/flat_button.dart';
 import '../../main.dart';
 import '../../theme/app_colors.dart';
 import '../home/home.dart';
+import '../test/test.dart';
 
 class SwingResultScreen extends ConsumerStatefulWidget {
   final bool quickView;
@@ -23,7 +24,6 @@ class SwingResultScreen extends ConsumerStatefulWidget {
 }
 
 class _SwingResultScreenState extends ConsumerState<SwingResultScreen> {
-  //final _ble = BluetoothModel();
   int _remainingTime = 5; // Time remaining for the timer
   Timer? _timer;
 
@@ -44,7 +44,69 @@ class _SwingResultScreenState extends ConsumerState<SwingResultScreen> {
         });
       });
     }
+
+    //printValues();
+    Map<String, List<double>> values = widget.swing.swingPoints;
+    List<Map<String, double>> path = calculateSwingPath(xValues: values['x']!, yValues: values['y']!, zValues: values['z']!, deltaT: .01);
+    print(path);
+
   }
+
+  void printValues(){
+    widget.swing.swingPoints.forEach((key, values) {
+      print('$key: ${values.join(', ')}');
+    });
+  }
+
+  List<Map<String, double>> calculateSwingPath({
+    required List<double> xValues,
+    required List<double> yValues,
+    required List<double> zValues,
+    required double deltaT, // Time difference in seconds (0.01 for 10ms)
+  }) {
+    const double gForceToAcceleration = 9.81; // Conversion factor
+    List<Map<String, double>> path = []; // To store positions (x, y, z)
+
+    // Initialize velocity and position
+    double vx = 0, vy = 0, vz = 0;
+    double px = 0, py = 0, pz = 0;
+
+    for (int i = 0; i < xValues.length; i++) {
+      // Convert g-force to acceleration (m/s²)
+      double ax = xValues[i] * gForceToAcceleration;
+      double ay = yValues[i] * gForceToAcceleration;
+      double az = zValues[i] * gForceToAcceleration;
+
+      // Update velocity (trapezoidal integration)
+      if (i > 0) {
+        double prevAx = xValues[i - 1] * gForceToAcceleration;
+        double prevAy = yValues[i - 1] * gForceToAcceleration;
+        double prevAz = zValues[i - 1] * gForceToAcceleration;
+
+        vx += (deltaT / 2) * (ax + prevAx);
+        vy += (deltaT / 2) * (ay + prevAy);
+        vz += (deltaT / 2) * (az + prevAz);
+      }
+
+      // Update position (trapezoidal integration)
+      if (i > 0) {
+        double prevVx = vx - (deltaT / 2) * ax;
+        double prevVy = vy - (deltaT / 2) * ay;
+        double prevVz = vz - (deltaT / 2) * az;
+
+        px += (deltaT / 2) * (vx + prevVx);
+        py += (deltaT / 2) * (vy + prevVy);
+        pz += (deltaT / 2) * (vz + prevVz);
+      }
+
+      // Store position in the path
+      path.add({'x': px, 'y': py, 'z': pz});
+    }
+
+    return path;
+  }
+
+
 
   @override
   void dispose() {
@@ -119,28 +181,19 @@ class _SwingResultScreenState extends ConsumerState<SwingResultScreen> {
                         const Text("Swing Graph", style: TextStyle(color: Colors.white, fontSize: 20),),
                         const SizedBox(height: 10,),
                         SwingGraph(swing: widget.swing),
-                        const SizedBox(height: 30,)
+                        const SizedBox(height: 30,),
+                        ElevatedButton(onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ThreeD(
+                                swingPoints: widget.swing.swingPoints,
+                              ),
+                            ),
+                          );
+                        }, child: Text("See 3D Graph"))
                       ],
                     ),
-                    // Visibility(
-                    //   visible: !widget.quickView,
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //     children: [
-                    //       CustomFlatButton(title: "Reswing", onTap: () {}, width: 110),
-                    //       CustomFlatButton(title: "Home", onTap: () {
-                    //         Navigator.pushAndRemoveUntil(
-                    //           context,
-                    //           MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    //               (Route<dynamic> route) => false, // This condition removes all previous routes.
-                    //         );
-                    //       }, width: 110),
-                    //       CustomFlatButton(title: "Graph", onTap: () {
-                    //         Navigator.push(context, MaterialPageRoute(builder: (context) => SwingGraphScreen(swing: widget.swing)),);
-                    //       }, width: 110),
-                    //     ],
-                    //   ),
-                    // ),
                   ],
                 ),
               ),

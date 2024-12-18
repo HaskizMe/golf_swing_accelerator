@@ -7,7 +7,7 @@ part of 'device_notifier.dart';
 // **************************************************************************
 
 String _$golfDeviceNotifierHash() =>
-    r'c0a1873560d777bfc7b929f91f939311d4d4cca4';
+    r'c56d372a21f945054f26cb59cb7c083b965a4f42';
 
 /// See also [GolfDeviceNotifier].
 @ProviderFor(GolfDeviceNotifier)

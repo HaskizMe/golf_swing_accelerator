@@ -214,13 +214,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:three_js/three_js.dart' as three;
+import 'package:three_js/three_js.dart';
 import 'package:three_js_geometry/three_js_geometry.dart';
 import 'package:three_js_geometry/tube_geometry.dart';
 import 'dart:math' as math;
 
 class ThreeD extends StatefulWidget {
+  final Map<String, List<double>> swingPoints;
 
-  const ThreeD({super.key});
+  const ThreeD({required this.swingPoints, super.key});
 
   @override
   createState() => _State();
@@ -231,10 +233,12 @@ class _State extends State<ThreeD> {
   late three.OrbitControls controls;
   late three.Object3D parent;
   late TubeGeometry tubeGeometry;
+  List<Vector> swingPathPoints = [];
   three.Mesh? mesh;
 
   @override
   void initState() {
+    calculateSwingPath(xValues: widget.swingPoints['x']!, yValues: widget.swingPoints['y']!, zValues: widget.swingPoints['z']!, deltaT: .01);
     threeJs = three.ThreeJS(
       onSetupComplete: () => setState(() {}),
       setup: setup,
@@ -249,6 +253,55 @@ class _State extends State<ThreeD> {
     super.dispose();
   }
 
+  List<Map<String, double>> calculateSwingPath({
+    required List<double> xValues,
+    required List<double> yValues,
+    required List<double> zValues,
+    required double deltaT, // Time difference in seconds (0.01 for 10ms)
+  }) {
+    const double gForceToAcceleration = 9.81; // Conversion factor
+    List<Map<String, double>> path = []; // To store positions (x, y, z)
+
+    // Initialize velocity and position
+    double vx = 0, vy = 0, vz = 0;
+    double px = 0, py = 0, pz = 0;
+
+    for (int i = 0; i < xValues.length; i++) {
+      // Convert g-force to acceleration (m/s²)
+      double ax = xValues[i] * gForceToAcceleration;
+      double ay = yValues[i] * gForceToAcceleration;
+      double az = zValues[i] * gForceToAcceleration;
+
+      // Update velocity (trapezoidal integration)
+      if (i > 0) {
+        double prevAx = xValues[i - 1] * gForceToAcceleration;
+        double prevAy = yValues[i - 1] * gForceToAcceleration;
+        double prevAz = zValues[i - 1] * gForceToAcceleration;
+
+        vx += (deltaT / 2) * (ax + prevAx);
+        vy += (deltaT / 2) * (ay + prevAy);
+        vz += (deltaT / 2) * (az + prevAz);
+      }
+
+      // Update position (trapezoidal integration)
+      if (i > 0) {
+        double prevVx = vx - (deltaT / 2) * ax;
+        double prevVy = vy - (deltaT / 2) * ay;
+        double prevVz = vz - (deltaT / 2) * az;
+
+        px += (deltaT / 2) * (vx + prevVx);
+        py += (deltaT / 2) * (vy + prevVy);
+        pz += (deltaT / 2) * (vz + prevVz);
+      }
+
+      swingPathPoints.add(three.Vector3(px, py, pz));
+      // Store position in the path
+      path.add({'x': px, 'y': py, 'z': pz});
+    }
+
+    return path;
+  }
+
   final Map<String,dynamic> params = {
     'spline': 'GolfSwingPath',
     'scale': 1.87,
@@ -260,30 +313,34 @@ class _State extends State<ThreeD> {
     'cameraHelper': false,
   };
 
-  static final golfSwingPath = three.CatmullRomCurve3( points: [
-    three.Vector3(-0.8, 0, 0),
-    three.Vector3(-0.7, 0.2, -0.8),
-    three.Vector3(-0.45, 0.5, -1.2),
-    three.Vector3(-0.3, 0.8, -1.3),
-    three.Vector3(-0.2, 1.2, -1.4),
-    three.Vector3(0.15, 1.9, -1),
-    three.Vector3(0.15, 2.1, -0.8),
-    three.Vector3(-0.1, 2.3, -0.5),
-    three.Vector3(-0.2, 2.4, -0.2),
-    three.Vector3(-0.3, 2.4, 0),
-    three.Vector3(-0.5, 2.2, 0.3),
-    three.Vector3(-0.7, 2.0, 0.4),
-    three.Vector3(-0.7, 1.5, 0.7),
-    three.Vector3(-0.7, 1.8, 0.7),
-    three.Vector3(-0.7, 2.1, 0.4),
-    three.Vector3(-0.6, 2.1, 0),
-    three.Vector3(-0.3, 2.1, -0.4),
-    three.Vector3(-0.1, 1.8, -0.8),
-    three.Vector3(-0.5, 1.3, -1),
-    three.Vector3(-0.7, 0.8, -0.9),
-    three.Vector3(-0.8, 0.4, -0.7),
-    three.Vector3(-0.8, 0, 0),
-  ]);
+  // static final golfSwingPath = three.CatmullRomCurve3(
+  //     points: [
+  //       three.Vector3(-0.8, 0, 0),
+  //       three.Vector3(-0.7, 0.2, -0.8),
+  //       three.Vector3(-0.45, 0.5, -1.2),
+  //       three.Vector3(-0.3, 0.8, -1.3),
+  //       three.Vector3(-0.2, 1.2, -1.4),
+  //       three.Vector3(0.15, 1.9, -1),
+  //       three.Vector3(0.15, 2.1, -0.8),
+  //       three.Vector3(-0.1, 2.3, -0.5),
+  //       three.Vector3(-0.2, 2.4, -0.2),
+  //       three.Vector3(-0.3, 2.4, 0),
+  //       three.Vector3(-0.5, 2.2, 0.3),
+  //       three.Vector3(-0.7, 2.0, 0.4),
+  //       three.Vector3(-0.7, 1.5, 0.7),
+  //       three.Vector3(-0.7, 1.8, 0.7),
+  //       three.Vector3(-0.7, 2.1, 0.4),
+  //       three.Vector3(-0.6, 2.1, 0),
+  //       three.Vector3(-0.3, 2.1, -0.4),
+  //       three.Vector3(-0.1, 1.8, -0.8),
+  //       three.Vector3(-0.5, 1.3, -1),
+  //       three.Vector3(-0.7, 0.8, -0.9),
+  //       three.Vector3(-0.8, 0.4, -0.7),
+  //       three.Vector3(-0.8, 0, 0),
+  // ]);
+
+  // static final golfSwingPath = three.CatmullRomCurve3(
+  //     points: swingPathPoints);
 
   final material = three.MeshLambertMaterial.fromMap( { 'color': 0xff00ff } );
 
@@ -298,8 +355,9 @@ class _State extends State<ThreeD> {
     }
 
     // Makes a swing path with tube geometry
-    final extrudePath = golfSwingPath;
-    tubeGeometry = TubeGeometry( extrudePath, params['extrusionSegments'], .03, params['radiusSegments'], params['closed'] );
+    //final extrudePath = golfSwingPath;
+    final golfSwingPath = three.CatmullRomCurve3(points: swingPathPoints);
+    tubeGeometry = TubeGeometry( golfSwingPath, params['extrusionSegments'], .03, params['radiusSegments'], params['closed'] );
     mesh = three.Mesh( tubeGeometry, material );
     final wireframe = three.Mesh( tubeGeometry, wireframeMaterial );
     mesh?.add( wireframe );
@@ -338,7 +396,7 @@ class _State extends State<ThreeD> {
     final ground = three.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = -math.pi / 2; // Rotate to lay flat
     ground.position.y = -2.4; // Position just below the model
-    threeJs.scene.add(ground);
+    //threeJs.scene.add(ground);
   }
 
   Future<void> loaderGolferAsset() async {
@@ -393,6 +451,7 @@ class _State extends State<ThreeD> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
         body: Stack(
           children: [
             threeJs.build(),
