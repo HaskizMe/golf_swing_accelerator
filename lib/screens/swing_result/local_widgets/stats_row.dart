@@ -21,7 +21,7 @@ class CustomStatsRow extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
+            Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),),
             Container(
               width: 150,
               height: 40,
@@ -29,7 +29,7 @@ class CustomStatsRow extends StatelessWidget {
                   color: AppColors.emerald.withOpacity(.9),
                   borderRadius: BorderRadius.circular(10),
               ),
-              child: Center(child: Text(result, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),)),
+              child: Center(child: Text(result, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),)),
             )
           ],
         ),

@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.golfaccelerator.golf_accelerator_app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34
     ndkVersion = "25.1.8937393"
 
     compileOptions {
@@ -27,7 +27,7 @@ android {
         applicationId "com.golfswingaccelerator1.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23
+        minSdk = 27
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

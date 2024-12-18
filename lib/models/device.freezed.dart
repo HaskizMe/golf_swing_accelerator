@@ -19,8 +19,10 @@ mixin _$GolfDevice {
   String get endOfPacketHeader => throw _privateConstructorUsedError;
   String get startOfPacketHeader => throw _privateConstructorUsedError;
   String get mphPacketHeader => throw _privateConstructorUsedError;
-  String get swingPointsHeader => throw _privateConstructorUsedError;
-  List<double> get tempSwingDataPoints => throw _privateConstructorUsedError;
+  String get swingPointsHeader =>
+      throw _privateConstructorUsedError; //@Default([]) List<double> tempSwingDataPoints,
+  Map<String, List<double>> get tempSwingDataPoints =>
+      throw _privateConstructorUsedError;
   int get tempSpeed => throw _privateConstructorUsedError;
   bool get collectingData => throw _privateConstructorUsedError;
 
@@ -42,7 +44,7 @@ abstract class $GolfDeviceCopyWith<$Res> {
       String startOfPacketHeader,
       String mphPacketHeader,
       String swingPointsHeader,
-      List<double> tempSwingDataPoints,
+      Map<String, List<double>> tempSwingDataPoints,
       int tempSpeed,
       bool collectingData});
 }
@@ -90,7 +92,7 @@ class _$GolfDeviceCopyWithImpl<$Res, $Val extends GolfDevice>
       tempSwingDataPoints: null == tempSwingDataPoints
           ? _value.tempSwingDataPoints
           : tempSwingDataPoints // ignore: cast_nullable_to_non_nullable
-              as List<double>,
+              as Map<String, List<double>>,
       tempSpeed: null == tempSpeed
           ? _value.tempSpeed
           : tempSpeed // ignore: cast_nullable_to_non_nullable
@@ -116,7 +118,7 @@ abstract class _$$GolfDeviceImplCopyWith<$Res>
       String startOfPacketHeader,
       String mphPacketHeader,
       String swingPointsHeader,
-      List<double> tempSwingDataPoints,
+      Map<String, List<double>> tempSwingDataPoints,
       int tempSpeed,
       bool collectingData});
 }
@@ -162,7 +164,7 @@ class __$$GolfDeviceImplCopyWithImpl<$Res>
       tempSwingDataPoints: null == tempSwingDataPoints
           ? _value._tempSwingDataPoints
           : tempSwingDataPoints // ignore: cast_nullable_to_non_nullable
-              as List<double>,
+              as Map<String, List<double>>,
       tempSpeed: null == tempSpeed
           ? _value.tempSpeed
           : tempSpeed // ignore: cast_nullable_to_non_nullable
@@ -183,7 +185,11 @@ class _$GolfDeviceImpl implements _GolfDevice {
       this.startOfPacketHeader = "a553",
       this.mphPacketHeader = "a573",
       this.swingPointsHeader = "a572",
-      final List<double> tempSwingDataPoints = const [],
+      final Map<String, List<double>> tempSwingDataPoints = const {
+        "x": [],
+        "y": [],
+        "z": []
+      },
       this.tempSpeed = 0,
       this.collectingData = false})
       : _tempSwingDataPoints = tempSwingDataPoints;
@@ -200,14 +206,16 @@ class _$GolfDeviceImpl implements _GolfDevice {
   @override
   @JsonKey()
   final String swingPointsHeader;
-  final List<double> _tempSwingDataPoints;
+//@Default([]) List<double> tempSwingDataPoints,
+  final Map<String, List<double>> _tempSwingDataPoints;
+//@Default([]) List<double> tempSwingDataPoints,
   @override
   @JsonKey()
-  List<double> get tempSwingDataPoints {
-    if (_tempSwingDataPoints is EqualUnmodifiableListView)
+  Map<String, List<double>> get tempSwingDataPoints {
+    if (_tempSwingDataPoints is EqualUnmodifiableMapView)
       return _tempSwingDataPoints;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_tempSwingDataPoints);
+    return EqualUnmodifiableMapView(_tempSwingDataPoints);
   }
 
   @override
@@ -269,7 +277,7 @@ abstract class _GolfDevice implements GolfDevice {
       final String startOfPacketHeader,
       final String mphPacketHeader,
       final String swingPointsHeader,
-      final List<double> tempSwingDataPoints,
+      final Map<String, List<double>> tempSwingDataPoints,
       final int tempSpeed,
       final bool collectingData}) = _$GolfDeviceImpl;
 
@@ -280,9 +288,9 @@ abstract class _GolfDevice implements GolfDevice {
   @override
   String get mphPacketHeader;
   @override
-  String get swingPointsHeader;
+  String get swingPointsHeader; //@Default([]) List<double> tempSwingDataPoints,
   @override
-  List<double> get tempSwingDataPoints;
+  Map<String, List<double>> get tempSwingDataPoints;
   @override
   int get tempSpeed;
   @override

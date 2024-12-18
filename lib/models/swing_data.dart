@@ -7,7 +7,8 @@ class SwingData {
   // Attributes
   final String? swingId;
   final int speed;
-  final List<double> swingPoints;
+  //final List<double> swingPoints;
+  final Map<String, List<double>> swingPoints;
   final Timestamp? createdAt; // Make createdAt optional
 
   // Constructor
@@ -43,10 +44,15 @@ class SwingData {
 
   // Factory constructor to create an instance from JSON (useful for Firestore reads)
   factory SwingData.fromJson(Map<String, dynamic> json) {
+    //print(json);
     return SwingData(
       swingId: json['docId'],
       speed: json['speed'],
-      swingPoints: List<double>.from(json['swingPoints']),
+      //swingPoints: List<double>.from(json['swingPoints']),
+      //swingPoints: Map<String, List<double>>.from(json['swingPoints'] ),
+      swingPoints: (json['swingPoints'] as Map<String, dynamic>).map(
+            (key, value) => MapEntry(key, List<double>.from(value as List)),
+      ),
       createdAt: json['createdAt'] as Timestamp?,
     );
   }

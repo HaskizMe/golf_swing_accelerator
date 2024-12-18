@@ -102,6 +102,7 @@ class BluetoothNotifier extends _$BluetoothNotifier {
       print("Characteristic received from device: $value");
       String data = bytes2Str(value);
 
+      print(data);
       // Use the notifier to handle the received data
       final deviceNotifier = ref.read(golfDeviceNotifierProvider.notifier);
       deviceNotifier.handleSwingData(data, context);
