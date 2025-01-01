@@ -1,216 +1,3 @@
-// import 'dart:async';
-// import 'package:flutter/material.dart';
-// import 'package:three_js/three_js.dart' as three;
-// //import 'package:example/src/statistics.dart';
-// import 'package:three_js_geometry/three_js_geometry.dart';
-// import 'package:three_js_geometry/tube_geometry.dart';
-// import 'package:three_js_helpers/three_js_helpers.dart';
-// import 'dart:math' as math;
-//
-//
-// class WebglGeometryExtrudeSplines extends StatefulWidget {
-//
-//   const WebglGeometryExtrudeSplines({super.key});
-//
-//   @override
-//   createState() => _State();
-// }
-//
-// class _State extends State<WebglGeometryExtrudeSplines> {
-//   List<int> data = List.filled(60, 0, growable: true);
-//   late Timer timer;
-//   late three.ThreeJS threeJs;
-//
-//   @override
-//   void initState() {
-//     timer = Timer.periodic(const Duration(seconds: 1), (t){
-//       setState(() {
-//         data.removeAt(0);
-//         data.add(threeJs.clock.fps);
-//       });
-//     });
-//     threeJs = three.ThreeJS(
-//       onSetupComplete: (){setState(() {});},
-//       setup: setup,
-//     );
-//     super.initState();
-//   }
-//   @override
-//   void dispose() {
-//     controls.dispose();
-//     timer.cancel();
-//     threeJs.dispose();
-//     three.loading.clear();
-//     super.dispose();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//         body: Stack(
-//           children: [
-//             threeJs.build(),
-//             //Statistics(data: data)
-//           ],
-//         )
-//     );
-//   }
-//   late three.OrbitControls controls;
-//   // late CameraHelper cameraHelper;
-//   late three.AnimationMixer mixer;
-//   // late three.Camera splineCamera;
-//   // late three.Mesh cameraEye;
-//
-//
-//   static final golfSwingPath = three.CatmullRomCurve3( points: [
-//     three.Vector3(-0.8, 0, 0),        // Starting point (addressing the ball)
-//     three.Vector3(-0.7, 0.2, -0.8),   // Backswing: club goes up and behind
-//     three.Vector3(-0.45, 0.5, -1.2),
-//     three.Vector3(-0.3, 0.8, -1.3),
-//     three.Vector3(-0.2, 1.2, -1.4),
-//     three.Vector3(0.15, 1.9, -1),
-//     three.Vector3(0.15, 2.1, -0.8),
-//     three.Vector3(-0.1, 2.3, -0.5),
-//     three.Vector3(-0.2, 2.4, -0.2),
-//     three.Vector3(-0.3, 2.4, 0),
-//     three.Vector3(-0.5, 2.2, 0.3),
-//     three.Vector3(-0.7, 2.0, 0.4),
-//     three.Vector3(-0.7, 1.5, 0.7),
-//     three.Vector3(-0.7, 1.8, 0.7),
-//     three.Vector3(-0.7, 2.1, 0.4),
-//     three.Vector3(-0.6, 2.1, 0),
-//     three.Vector3(-0.3, 2.1, -0.4),
-//     three.Vector3(-0.1, 1.8, -0.8),
-//     three.Vector3(-0.5, 1.3, -1),
-//     three.Vector3(-0.7, 0.8, -0.9),
-//     three.Vector3(-0.8, 0.4, -0.7),
-//     three.Vector3(-0.8, 0, 0),
-//   ]);
-//
-//   // Keep a dictionary of Curve instances
-//   final splines = {
-//     'GolfSwingPath': golfSwingPath
-//   };
-//
-//   late three.Object3D parent;
-//   late TubeGeometry tubeGeometry;
-//   three.Mesh? mesh;
-//
-//   final Map<String,dynamic> params = {
-//     'spline': 'GolfSwingPath',
-//     'scale': 1.87,
-//     'extrusionSegments': 100,
-//     'radiusSegments': 10,
-//     'closed': true,
-//     'animationView': false,
-//     'lookAhead': false,
-//     'cameraHelper': false,
-//   };
-//
-//   final material = three.MeshLambertMaterial.fromMap( { 'color': 0xff00ff } );
-//
-//   final wireframeMaterial = three.MeshBasicMaterial.fromMap( { 'color': 0x000000, 'opacity': 0.3, 'wireframe': true, 'transparent': true } );
-//
-//   void addTube() {
-//     if ( mesh != null ) {
-//       parent.remove( mesh! );
-//       mesh!.geometry?.dispose();
-//     }
-//
-//     final extrudePath = splines[ params['spline'] ];
-//     tubeGeometry = TubeGeometry( extrudePath, params['extrusionSegments'], .03, params['radiusSegments'], params['closed'] );
-//     addGeometry( tubeGeometry );
-//     setScale();
-//   }
-//
-//
-//   void setScale() {
-//     mesh?.scale.setValues( params['scale'], params['scale'], params['scale'] );
-//     mesh?.position.setValues(1.4, -1.8, -.5);
-//   }
-//
-//
-//   void addGeometry( geometry ) {
-//     mesh = three.Mesh( geometry, material );
-//     final wireframe = three.Mesh( geometry, wireframeMaterial );
-//     mesh?.add( wireframe );
-//     parent.add( mesh );
-//   }
-//
-//   Future<void> setup() async {
-//     threeJs.camera = three.PerspectiveCamera(45, threeJs.width / threeJs.height, 1, 2200);
-//     threeJs.camera.position.setValues(3, 6, 10);
-//     controls = three.OrbitControls(threeJs.camera, threeJs.globalKey);
-//     threeJs.scene = three.Scene();
-//     threeJs.scene.background = three.Color.fromHex32(0x87CEEB);
-//
-//     final ambientLight = three.AmbientLight(0xffffff, 0.9);
-//     threeJs.scene.add(ambientLight);
-//
-//     final pointLight = three.PointLight(0xffffff, 0.8);
-//
-//     pointLight.position.setValues(0, 0, 0);
-//
-//     threeJs.camera.add(pointLight);
-//     threeJs.scene.add(threeJs.camera);
-//
-//     threeJs.camera.lookAt(threeJs.scene.position);
-//
-//     // Load golfer.glb
-//     three.GLTFLoader loader = three.GLTFLoader().setPath('assets/');
-//     final golfer = await loader.fromAsset('golfer.glb');
-//
-//     if (golfer?.scene != null) {
-//       golfer!.scene.scale.setValues(2, 2, 2); // Scale the golfer
-//       golfer.scene.position.setValues(0, 0, 0); // Position the golfer at the origin
-//       threeJs.scene.add(golfer.scene);
-//
-//       // Compute bounding box for the golfer
-//       final boundingBox = three.BoundingBox().setFromObject(golfer.scene);
-//       final center = boundingBox.getCenter(three.Vector3());
-//       final size = boundingBox.getSize(three.Vector3());
-//
-//       // Center the golfer
-//       golfer.scene.position.sub(center); // Adjust position to center the object
-//
-//       // Adjust the camera to view the model
-//       final maxDim = math.max(size.x, math.max(size.y, size.z));
-//       final distance = maxDim * 4; // Scale the distance based on object size
-//       threeJs.camera.position.setValues(center.x, center.y, distance); // Move the camera back
-//       threeJs.camera.lookAt(center); // Point the camera to the center
-//
-//       print('Golfer centered at: $center with size: $size');
-//     } else {
-//       print("Failed to load golfer.glb");
-//     }
-//
-//     final object = golfer!.scene;
-//     threeJs.scene.add(object);
-//     mixer = three.AnimationMixer(object);
-//     mixer.clipAction(golfer.animations![0], null, null)!.play();
-//
-//
-//     // Slow down the animation by reducing the timeScale
-//     mixer.timeScale = .1; // Slow down to half speed
-//
-//     threeJs.addAnimationEvent((dt){
-//       mixer.update(dt);
-//       controls.update();
-//     });
-//     // Add the TubeGeometry (path)
-//     parent = three.Object3D();
-//     threeJs.scene.add(parent);
-//
-//     addTube(); // Recreate the TubeGeometry with scaling
-//
-//   }
-//
-//
-// }
-
-
-
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:three_js/three_js.dart' as three;
@@ -236,9 +23,33 @@ class _State extends State<ThreeD> {
   List<Vector> swingPathPoints = [];
   three.Mesh? mesh;
 
+  Map<String, List<double>> demoSwingPath = {
+    'x': [
+      -0.8, -0.7, -0.45, -0.3, -0.2, 0.15, 0.15, -0.1, -0.2, -0.3,
+      -0.5, -0.7, -0.7, -0.7, -0.7, -0.6, -0.3, -0.1, -0.5, -0.7,
+      -0.8, -0.8
+    ],
+    'y': [
+      0.0, 0.2, 0.5, 0.8, 1.2, 1.9, 2.1, 2.3, 2.4, 2.4,
+      2.2, 2.0, 1.5, 1.8, 2.1, 2.1, 2.1, 1.8, 1.3, 0.8,
+      0.4, 0.0
+    ],
+    'z': [
+      0.0, -0.8, -1.2, -1.3, -1.4, -1.0, -0.8, -0.5, -0.2, 0.0,
+      0.3, 0.4, 0.7, 0.7, 0.4, 0.0, -0.4, -0.8, -1.0, -0.9,
+      -0.7, 0.0
+    ],
+  };
+
   @override
   void initState() {
-    calculateSwingPath(xValues: widget.swingPoints['x']!, yValues: widget.swingPoints['y']!, zValues: widget.swingPoints['z']!, deltaT: .01);
+    Map<String, List<double>> test = generateRawData(swingPath: demoSwingPath, deltaT: .01);
+    print(test);
+    calculateSwingPath(xValues: test['ax']!, yValues: test['ay']!, zValues: test['az']!, deltaT: .01);
+
+
+    //populatePath(demoSwingPath);
+    // calculateSwingPath(xValues: widget.swingPoints['x']!, yValues: widget.swingPoints['y']!, zValues: widget.swingPoints['z']!, deltaT: .01);
     threeJs = three.ThreeJS(
       onSetupComplete: () => setState(() {}),
       setup: setup,
@@ -253,53 +64,109 @@ class _State extends State<ThreeD> {
     super.dispose();
   }
 
-  List<Map<String, double>> calculateSwingPath({
+  void populatePath(Map<String, List<double>> path){
+    for(int i = 0; i < path['x']!.length; i++){
+      swingPathPoints.add(three.Vector3(path['x']![i], path['y']![i], path['z']![i]));
+    }
+  }
+
+  Map<String, List<double>> calculateSwingPath({
     required List<double> xValues,
     required List<double> yValues,
     required List<double> zValues,
-    required double deltaT, // Time difference in seconds (0.01 for 10ms)
+    required double deltaT,
   }) {
-    const double gForceToAcceleration = 9.81; // Conversion factor
-    List<Map<String, double>> path = []; // To store positions (x, y, z)
+    const double gForceToAcceleration = 9.81;
 
     // Initialize velocity and position
     double vx = 0, vy = 0, vz = 0;
-    double px = 0, py = 0, pz = 0;
+    double px = -0.8, py = 0, pz = 0;
+
+    List<double> reconstructedX = [px];
+    List<double> reconstructedY = [py];
+    List<double> reconstructedZ = [pz];
 
     for (int i = 0; i < xValues.length; i++) {
-      // Convert g-force to acceleration (m/s²)
+      // Convert g-force to acceleration
       double ax = xValues[i] * gForceToAcceleration;
       double ay = yValues[i] * gForceToAcceleration;
       double az = zValues[i] * gForceToAcceleration;
 
-      // Update velocity (trapezoidal integration)
-      if (i > 0) {
-        double prevAx = xValues[i - 1] * gForceToAcceleration;
-        double prevAy = yValues[i - 1] * gForceToAcceleration;
-        double prevAz = zValues[i - 1] * gForceToAcceleration;
+      // Update velocity using trapezoidal integration
+      vx += ax * deltaT;
+      vy += ay * deltaT;
+      vz += az * deltaT;
 
-        vx += (deltaT / 2) * (ax + prevAx);
-        vy += (deltaT / 2) * (ay + prevAy);
-        vz += (deltaT / 2) * (az + prevAz);
-      }
+      // Update position using velocity
+      px += vx * deltaT;
+      py += vy * deltaT;
+      pz += vz * deltaT;
 
-      // Update position (trapezoidal integration)
-      if (i > 0) {
-        double prevVx = vx - (deltaT / 2) * ax;
-        double prevVy = vy - (deltaT / 2) * ay;
-        double prevVz = vz - (deltaT / 2) * az;
-
-        px += (deltaT / 2) * (vx + prevVx);
-        py += (deltaT / 2) * (vy + prevVy);
-        pz += (deltaT / 2) * (vz + prevVz);
-      }
+      reconstructedX.add(px);
+      reconstructedY.add(py);
+      reconstructedZ.add(pz);
 
       swingPathPoints.add(three.Vector3(px, py, pz));
-      // Store position in the path
-      path.add({'x': px, 'y': py, 'z': pz});
     }
 
-    return path;
+    return {
+      'x': reconstructedX,
+      'y': reconstructedY,
+      'z': reconstructedZ,
+    };
+  }
+
+
+  Map<String, List<double>> generateRawData({
+    required Map<String, List<double>> swingPath,
+    required double deltaT,
+  }) {
+    const double accelerationToGForce = 1 / 9.81;
+
+    List<double> axList = [];
+    List<double> ayList = [];
+    List<double> azList = [];
+
+    double prevX = swingPath['x']![0];
+    double prevY = swingPath['y']![0];
+    double prevZ = swingPath['z']![0];
+
+    double prevVx = 0, prevVy = 0, prevVz = 0;
+
+    for (int i = 1; i < swingPath['x']!.length; i++) {
+      double currentX = swingPath['x']![i];
+      double currentY = swingPath['y']![i];
+      double currentZ = swingPath['z']![i];
+
+      // Compute velocity
+      double vx = (currentX - prevX) / deltaT;
+      double vy = (currentY - prevY) / deltaT;
+      double vz = (currentZ - prevZ) / deltaT;
+
+      // Compute acceleration
+      double ax = (vx - prevVx) / deltaT;
+      double ay = (vy - prevVy) / deltaT;
+      double az = (vz - prevVz) / deltaT;
+
+      // Convert to g-force
+      axList.add(ax * accelerationToGForce);
+      ayList.add(ay * accelerationToGForce);
+      azList.add(az * accelerationToGForce);
+
+      prevX = currentX;
+      prevY = currentY;
+      prevZ = currentZ;
+
+      prevVx = vx;
+      prevVy = vy;
+      prevVz = vz;
+    }
+
+    return {
+      'ax': axList,
+      'ay': ayList,
+      'az': azList,
+    };
   }
 
   final Map<String,dynamic> params = {
