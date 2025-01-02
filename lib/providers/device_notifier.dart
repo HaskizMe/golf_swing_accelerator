@@ -34,7 +34,7 @@ class GolfDeviceNotifier extends _$GolfDeviceNotifier {
   /// 1. We receive a start of packet header which clears the previous data
   ///   if any was store in our temp variables and shows a sets a loader variable to true to show a loading screen
   /// 2. We will get a stream of data which are the data points of the swing. This helps us see the path of the club during swing
-  ///   We store these points until as long as we have that swingPointsHeader showing
+  ///   We store these points until as long as we have the swingPointsHeader showing
   /// 3. When the swing is done we grab the highest z g-force that was collected and assume that was the peak of their swing.
   ///   We then calculate the speed based on the g-force
   /// 4. We receive the end of packet header meaning we shouldn't be collecting data anymore and we save that swing and send it to our database.

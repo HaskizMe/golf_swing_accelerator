@@ -12,6 +12,8 @@ class SwingsNotifier extends _$SwingsNotifier {
 
   // Add Swing
   void addSwing(SwingData swing) {
+    // This checks to see if the swing is already in our notifier. If so then we will just skip adding it
+    if (state.any((existingSwing) => existingSwing.swingId == swing.swingId)) return;
     // Concatenate the new event to the current state
     state = [...state, swing];
 
