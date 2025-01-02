@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:golf_accelerator_app/models/bluetooth.dart';
 import 'package:golf_accelerator_app/providers/bluetooth_notifier.dart';
 import 'package:golf_accelerator_app/providers/device_notifier.dart';
 import 'package:golf_accelerator_app/providers/swings_notifier.dart';
@@ -16,7 +15,6 @@ class SwingScreen extends ConsumerStatefulWidget {
 }
 
 class _SwingScreenState extends ConsumerState<SwingScreen> {
-  //final _ble = BluetoothModel();
 
   @override
   void initState() {
@@ -44,15 +42,12 @@ class _SwingScreenState extends ConsumerState<SwingScreen> {
 
   void _initialize() {
     final ble = ref.read(bluetoothNotifierProvider.notifier);
-    print("Init");
     // BluetoothDevice? device = _ble.myConnectedDevice;
     BluetoothDevice? device = ref.read(bluetoothNotifierProvider).connectedDevice;
     if (device != null) {
       ble.setupListeners(device, context);
-
-      //_ble.setupListeners(device, ref);
     } else {
-      print("Null");
+      print("No device connected yet");
     }
   }
 
